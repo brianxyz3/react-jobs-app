@@ -8,10 +8,10 @@ const HomePage = () => {
         <>
             <Hero />
             <HomeCards />
-            <JobList />
+            <JobList isHome={true} />
             <ViewAllJobs />
         </>
     )
 }
 
-export default HomePage
+export default HomePage;

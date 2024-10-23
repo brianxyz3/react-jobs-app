@@ -6,4 +6,4 @@ const Card = ({ children, bgColor = "bg-gray-100" }) => {
     )
 }
 
-export default Card
+export default Card;
