@@ -6,10 +6,11 @@ const JobList = ({ isHome = false }) => {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const apiUrl = isHome ? "http://localhost:5000/jobs?_limit=3" : "http://localhost:5000/jobs"
+    // getting data from api using useEffect
+    const apiUrl = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
 
     useEffect(() => {
-        const fetchJobs = async () => {
+        const getJobs = async () => {
             try {
                 const res = await fetch(apiUrl);
                 const data = await res.json();
@@ -20,7 +21,7 @@ const JobList = ({ isHome = false }) => {
                 setLoading(false)
             }
         }
-        fetchJobs()
+        getJobs()
     }, [])
 
     return (
