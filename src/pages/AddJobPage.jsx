@@ -1,6 +1,46 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { TextField } from '@mui/material';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+const types = [
+    "Full-Time",
+    "Part-Time",
+    "Remote",
+    "Internship",
+];
+
+const salaries = [
+    "Under $50K",
+    "$50K - 60K",
+    "$60K - 70K",
+    "$70K - 80K",
+    "$80K - 90K",
+    "$90K - 100K",
+    "$100K - 125K",
+    "$125K - 150K",
+    "$150K - 175K",
+    "$175K - 200K",
+    "Over $200K",
+];
+
 
 const AddJobPage = ({ addJob }) => {
     const navigate = useNavigate();
@@ -8,12 +48,36 @@ const AddJobPage = ({ addJob }) => {
     const {
         register,
         handleSubmit,
+        formState: { errors },
     } = useForm({ mode: "onChange" });
+
+
+
+    const validateForm = {
+        type: {
+            required: "Selected the job type",
+        },
+        title: {
+            required: "Job listing name cannot be blank",
+        },
+        salary: {
+            required: "Select the salary range",
+        },
+        location: {
+            required: "Location cannot be blank",
+        },
+        name: {
+            required: "Company name cannot be blank",
+        },
+        email: {
+            required: "Contact email cannot be blank",
+        },
+    }
 
     const submitAddForm = (data) => {
         const newJob = { ...data, id: uuid() };
         addJob(newJob);
-        return navigate("/jobs")
+        return navigate("/jobs");
     }
 
     return (
@@ -26,141 +90,152 @@ const AddJobPage = ({ addJob }) => {
                         <h2 className="text-3xl text-center font-semibold mb-6">Add Job</h2>
 
                         <div className="mb-4">
-                            <label htmlFor="type" className="block text-gray-700 font-bold mb-2"
-                            >Job Type</label
-                            >
-                            <select
-                                id="type"
-                                name="type"
-                                className="border rounded w-full py-2 px-3"
-                                {...register("type")}
-                            >
-                                <option value="Full-Time">Full-Time</option>
-                                <option value="Part-Time">Part-Time</option>
-                                <option value="Remote">Remote</option>
-                                <option value="Internship">Internship</option>
-                            </select>
+                            <label className="block text-gray-700 font-bold mb-2"
+                            >Job Type</label>
+                            <FormControl fullWidth>
+                                <InputLabel id="type">Type</InputLabel>
+                                <Select
+                                    labelId="type"
+                                    input={<OutlinedInput label="type" />}
+                                    defaultValue="Full-Time"
+                                    MenuProps={MenuProps}
+                                    {...register("type")}
+                                >
+                                    {types.map((type) => (
+                                        <MenuItem
+                                            key={type}
+                                            value={type}
+                                        >
+                                            {type}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </div>
 
                         <div className="mb-4">
                             <label className="block text-gray-700 font-bold mb-2"
-                            >Job Listing Name</label
-                            >
-                            <input
-                                type="text"
+                            >Job Listing Name</label>
+                            <TextField
+                                fullWidth
+                                error={errors.title ? true : false}
                                 id="title"
-                                name="title"
-                                className="border rounded w-full py-2 px-3 mb-2"
+                                label="Title"
                                 placeholder="eg. Beautiful Apartment In Miami"
-                                {...register("title")}
+                                {...register("title", validateForm.title)}
                             />
-                        </div>
-                        <div className="mb-4">
-                            <label
-                                htmlFor="description"
-                                className="block text-gray-700 font-bold mb-2"
-                            >Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                className="border rounded w-full py-2 px-3"
-                                rows="4"
-                                placeholder="Add any job duties, expectations, requirements, etc"
-                                {...register("description")}
-                            ></textarea>
+                            {errors.title && <span style={{ color: "red" }}>{validateForm.title.required}</span>}
                         </div>
 
+
                         <div className="mb-4">
-                            <label htmlFor="type" className="block text-gray-700 font-bold mb-2"
+                            <label className="block text-gray-700 font-bold mb-2"
+                            >Description</label>
+                            <TextField
+                                fullWidth
+                                error={errors.description ? true : false}
+                                maxRows={4}
+                                id="description"
+                                label="Description"
+                                placeholder="Add any job duties, expectations, requirements, etc"
+                                {...register("description", validateForm.description)}
+                            />
+                            {errors.description && <span style={{ color: "red" }}>{validateForm.description.required}</span>}
+                        </div>
+
+
+
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-bold mb-2"
                             >Salary</label>
-                            <select
-                                id="salary"
-                                name="salary"
-                                className="border rounded w-full py-2 px-3"
-                                {...register("salary")}
-                            >
-                                <option value="Under $50K">Under $50K</option>
-                                <option value="$50K - 60K">$50K - $60K</option>
-                                <option value="$60K - 70K">$60K - $70K</option>
-                                <option value="$70K - 80K">$70K - $80K</option>
-                                <option value="$80K - 90K">$80K - $90K</option>
-                                <option value="$90K - 100K">$90K - $100K</option>
-                                <option value="$100K - 125K">$100K - $125K</option>
-                                <option value="$125K - 150K">$125K - $150K</option>
-                                <option value="$150K - 175K">$150K - $175K</option>
-                                <option value="$175K - 200K">$175K - $200K</option>
-                                <option value="Over $200K">Over $200K</option>
-                            </select>
+                            <FormControl fullWidth>
+                                <InputLabel id="salary">Salary</InputLabel>
+                                <Select
+                                    labelId="salary"
+                                    input={<OutlinedInput label="salary" />}
+                                    defaultValue="Under $50K"
+                                    MenuProps={MenuProps}
+                                    {...register("salary")}
+                                >
+                                    {salaries.map((salary) => (
+                                        <MenuItem
+                                            key={salary}
+                                            value={salary}
+                                        >
+                                            {salary}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </div>
 
                         <div className='mb-4'>
                             <label className='block text-gray-700 font-bold mb-2'>
                                 Location
                             </label>
-                            <input
-                                type='text'
-                                id='location'
-                                name='location'
-                                className='border rounded w-full py-2 px-3 mb-2'
-                                placeholder='Company Location'
-                                {...register("location")}
+                            <TextField
+                                fullWidth
+                                error={errors.location ? true : false}
+                                id="location"
+                                label="Location"
+                                placeholder="Company Location"
+                                {...register("location", validateForm.location)}
                             />
+                            {errors.location && <span style={{ color: "red" }}>{validateForm.location.required}</span>}
                         </div>
 
                         <h3 className="text-2xl mb-5">Company Info</h3>
 
                         <div className="mb-4">
-                            <label htmlFor="company" className="block text-gray-700 font-bold mb-2"
+                            <label className="block text-gray-700 font-bold mb-2"
                             >Company Name</label>
-                            <input
-                                type="text"
-                                id="company"
-                                name="company"
-                                className="border rounded w-full py-2 px-3"
+                            <TextField
+                                fullWidth
+                                error={errors.company ? true : false}
+                                id="name"
+                                label="Company Name"
                                 placeholder="Company Name"
-                                {...register("company.name")}
+                                {...register("company.name", validateForm.name)}
+                            />
+                            {errors.company && <span style={{ color: "red" }}>{validateForm.name.required}</span>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label
+                                className="block text-gray-700 font-bold mb-2"
+                            >Company Description</label>
+                            <TextField
+                                fullWidth
+                                id="description"
+                                label="Company Description"
+                                maxRows={4}
+                                placeholder="What does your company do?"
+                                {...register("company.description")}
                             />
                         </div>
 
                         <div className="mb-4">
                             <label
-                                htmlFor="company_description"
-                                className="block text-gray-700 font-bold mb-2"
-                            >Company Description</label>
-                            <textarea
-                                id="company_description"
-                                name="company_description"
-                                className="border rounded w-full py-2 px-3"
-                                rows="4"
-                                placeholder="What does your company do?"
-                                {...register("company.description")}
-                            ></textarea>
-                        </div>
-
-                        <div className="mb-4">
-                            <label
-                                htmlFor="contact_email"
                                 className="block text-gray-700 font-bold mb-2"
                             >Contact Email</label>
-                            <input
+                            <TextField
+                                fullWidth
                                 type="email"
-                                id="contact_email"
-                                name="contact_email"
-                                className="border rounded w-full py-2 px-3"
+                                id="email"
+                                label="Company Email"
                                 placeholder="Email address for applicants"
                                 {...register("company.contactEmail")}
                             />
                         </div>
+
                         <div className="mb-4">
                             <label
-                                htmlFor="contact_phone"
                                 className="block text-gray-700 font-bold mb-2"
                             >Contact Phone</label>
-                            <input
-                                type="tel"
-                                id="contact_phone"
-                                name="contact_phone"
-                                className="border rounded w-full py-2 px-3"
+                            <TextField
+                                fullWidth
+                                id="tel"
+                                label="Company Tel"
                                 placeholder="Optional phone for applicants"
                                 {...register("company.contactPhone")}
                             />
@@ -182,3 +257,6 @@ const AddJobPage = ({ addJob }) => {
 }
 
 export default AddJobPage;
+
+
+
