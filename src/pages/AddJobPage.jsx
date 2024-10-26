@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
-import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -52,6 +51,7 @@ const AddJobPage = ({ addJob }) => {
     } = useForm({ mode: "onChange" });
 
 
+    const errorStyle = { color: "red" };
 
     const validateForm = {
         type: {
@@ -124,7 +124,7 @@ const AddJobPage = ({ addJob }) => {
                                 placeholder="eg. Beautiful Apartment In Miami"
                                 {...register("title", validateForm.title)}
                             />
-                            {errors.title && <span style={{ color: "red" }}>{validateForm.title.required}</span>}
+                            {errors.title && <span style={errorStyle}>{validateForm.title.required}</span>}
                         </div>
 
 
@@ -140,7 +140,7 @@ const AddJobPage = ({ addJob }) => {
                                 placeholder="Add any job duties, expectations, requirements, etc"
                                 {...register("description", validateForm.description)}
                             />
-                            {errors.description && <span style={{ color: "red" }}>{validateForm.description.required}</span>}
+                            {errors.description && <span style={errorStyle}>{validateForm.description.required}</span>}
                         </div>
 
 
@@ -181,7 +181,7 @@ const AddJobPage = ({ addJob }) => {
                                 placeholder="Company Location"
                                 {...register("location", validateForm.location)}
                             />
-                            {errors.location && <span style={{ color: "red" }}>{validateForm.location.required}</span>}
+                            {errors.location && <span style={errorStyle}>{validateForm.location.required}</span>}
                         </div>
 
                         <h3 className="text-2xl mb-5">Company Info</h3>
@@ -197,7 +197,7 @@ const AddJobPage = ({ addJob }) => {
                                 placeholder="Company Name"
                                 {...register("company.name", validateForm.name)}
                             />
-                            {errors.company && <span style={{ color: "red" }}>{validateForm.name.required}</span>}
+                            {errors.company && <span style={errorStyle}>{validateForm.name.required}</span>}
                         </div>
 
                         <div className="mb-4">

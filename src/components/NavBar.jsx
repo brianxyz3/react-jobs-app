@@ -24,8 +24,7 @@ const NavBar = () => {
                                 alt="React Jobs"
                             />
                             <span className="hidden md:block text-white text-2xl font-bold ml-2"
-                            >React Jobs</span
-                            >
+                            >React Jobs</span>
                         </NavLink>
                         {/* Nav Link Items */}
                         <div className="md:ml-auto">
@@ -33,18 +32,15 @@ const NavBar = () => {
                                 <NavLink
                                     to="/"
                                     className={checkActive}
-                                >Home</NavLink
-                                >
+                                >Home</NavLink>
                                 <NavLink
                                     to="/jobs"
                                     className={checkActive}
-                                >Jobs</NavLink
-                                >
+                                >Jobs</NavLink>
                                 <NavLink
                                     to="/add-job"
                                     className={checkActive}
-                                >Add Job</NavLink
-                                >
+                                >Add Job</NavLink>
                             </div>
                         </div>
                     </div>
