@@ -1,6 +1,5 @@
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { v4 as uuid } from "uuid";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -29,21 +28,21 @@ const types = [
 
 const salaries = [
     "Under $50K",
-    "$50K - 60K",
-    "$60K - 70K",
-    "$70K - 80K",
-    "$80K - 90K",
-    "$90K - 100K",
-    "$100K - 125K",
-    "$125K - 150K",
-    "$150K - 175K",
-    "$175K - 200K",
+    "$50K - $60K",
+    "$60K - $70K",
+    "$70K - $80K",
+    "$80K - $90K",
+    "$90K - $100K",
+    "$100K - $125K",
+    "$125K - $150K",
+    "$150K - $175K",
+    "$175K - $200K",
     "Over $200K",
 ];
-
-
-const AddJobPage = ({ addJob }) => {
+const EditJobPage = ({ updateJob }) => {
+    const job = useLoaderData();
     const navigate = useNavigate();
+    const { id } = useParams();
 
     const {
         register,
@@ -72,21 +71,22 @@ const AddJobPage = ({ addJob }) => {
         }
     }
 
-    const submitAddForm = (data) => {
-        const newJob = { ...data, id: uuid() };
-        addJob(newJob);
-        toast.success("Job listing successfully added");
-        return navigate(`/jobs/${newJob.id}`);
+    const submitEditForm = (updatedJob) => {
+        updateJob(updatedJob, id);
+        toast.success("Job listing successfully updated");
+        return navigate(`/jobs/${id}`);
     }
-
+    const backToJob = () => {
+        return navigate(`/jobs/${id}`)
+    }
     return (
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-24">
                 <div
                     className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
                 >
-                    <form onSubmit={handleSubmit(submitAddForm)}>
-                        <h2 className="text-3xl text-center font-semibold mb-6">Add Job</h2>
+                    <form onSubmit={handleSubmit(submitEditForm)}>
+                        <h2 className="text-3xl text-center font-semibold mb-6">Edit Job</h2>
 
                         <div className="mb-4">
                             <label className="block text-gray-700 font-bold mb-2"
@@ -96,7 +96,7 @@ const AddJobPage = ({ addJob }) => {
                                 <Select
                                     labelId="type"
                                     input={<OutlinedInput label="type" />}
-                                    defaultValue="Full-Time"
+                                    defaultValue={job.type}
                                     MenuProps={MenuProps}
                                     {...register("type")}
                                 >
@@ -120,7 +120,7 @@ const AddJobPage = ({ addJob }) => {
                                 error={errors.title ? true : false}
                                 id="title"
                                 label="Title"
-                                placeholder="eg. Beautiful Apartment In Miami"
+                                defaultValue={job.title}
                                 {...register("title", validateForm.title)}
                             />
                             {errors.title && <span style={errorStyle}>{validateForm.title.required}</span>}
@@ -136,7 +136,7 @@ const AddJobPage = ({ addJob }) => {
                                 maxRows={4}
                                 id="description"
                                 label="Description"
-                                placeholder="Add any job duties, expectations, requirements, etc"
+                                defaultValue={job.description}
                                 {...register("description", validateForm.description)}
                             />
                             {errors.description && <span style={errorStyle}>{validateForm.description.required}</span>}
@@ -152,7 +152,7 @@ const AddJobPage = ({ addJob }) => {
                                 <Select
                                     labelId="salary"
                                     input={<OutlinedInput label="salary" />}
-                                    defaultValue="Under $50K"
+                                    defaultValue={job.salary}
                                     MenuProps={MenuProps}
                                     {...register("salary")}
                                 >
@@ -177,7 +177,7 @@ const AddJobPage = ({ addJob }) => {
                                 error={errors.location ? true : false}
                                 id="location"
                                 label="Location"
-                                placeholder="Company Location"
+                                defaultValue={job.location}
                                 {...register("location", validateForm.location)}
                             />
                             {errors.location && <span style={errorStyle}>{validateForm.location.required}</span>}
@@ -193,7 +193,7 @@ const AddJobPage = ({ addJob }) => {
                                 error={errors.company ? true : false}
                                 id="name"
                                 label="Name"
-                                placeholder="Company Name"
+                                defaultValue={job.company.name}
                                 {...register("company.name", validateForm.name)}
                             />
                             {errors.company && <span style={errorStyle}>{validateForm.name.required}</span>}
@@ -207,8 +207,8 @@ const AddJobPage = ({ addJob }) => {
                                 fullWidth
                                 id="description"
                                 label="Description"
+                                defaultValue={job.company.description}
                                 maxRows={4}
-                                placeholder="What does your company do?"
                                 {...register("company.description")}
                             />
                         </div>
@@ -222,7 +222,7 @@ const AddJobPage = ({ addJob }) => {
                                 type="email"
                                 id="email"
                                 label="Company Email"
-                                placeholder="Email address for applicants"
+                                defaultValue={job.company.contactEmail}
                                 {...register("company.contactEmail")}
                             />
                         </div>
@@ -235,7 +235,7 @@ const AddJobPage = ({ addJob }) => {
                                 fullWidth
                                 id="tel"
                                 label="Company Tel"
-                                placeholder="Optional phone for applicants"
+                                defaultValue={job.company.contactPhone}
                                 {...register("company.contactPhone")}
                             />
                         </div>
@@ -245,14 +245,19 @@ const AddJobPage = ({ addJob }) => {
                                 className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                                 type="submit"
                             >
-                                Add Job
+                                Edit Job
                             </button>
                         </div>
                     </form>
+                    <button
+                        onClick={backToJob}
+                        className="bg-violet-800 hover:bg-violet-900 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-3"
+                    >
+                        Back to Job
+                    </button>
                 </div>
             </div>
-        </section>
-    )
+        </section>)
 }
 
-export default AddJobPage;
+export default EditJobPage;
