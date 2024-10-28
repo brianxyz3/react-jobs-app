@@ -1,25 +1,37 @@
 import { useLoaderData, Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import DeleteIcon from "@mui/icons-material/Delete"
 import JobInfo from "../components/JobInfo";
+import DeleteConfirmPopup from "../components/DeleteConfirmPopup";
 import CompanyInfo from "../components/CompanyInfo";
 
 
 const JobShowPage = ({ deleteJob }) => {
     const job = useLoaderData();
     const navigate = useNavigate();
+    const [showPopup, setShowPopup] = useState(false);
 
-    const handleDelete = (jobId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this job listing?")
+    const handleDeleteClick = () => {
+        setShowPopup(prevState => !prevState);
+    }
 
-        if (!confirmDelete) return;
+    const confirmDelete = (jobId) => {
         deleteJob(jobId);
-        toast.success("Job listing successfully deleted")
-        navigate("/jobs")
+        setShowPopup(prevState => !prevState);
+        toast.success("Job listing successfully deleted");
+        navigate("/jobs");
+    }
+
+    const cancel = () => {
+        setShowPopup(prevState => !prevState);
+        toast.error("Delete job listing cancelled");
     }
 
     return (
         <>
+            {showPopup && <DeleteConfirmPopup id={job.id} onConfirm={confirmDelete} onCancel={cancel} />}
             <section>
                 <div className="container m-auto py-6 px-6">
                     <Link
@@ -47,9 +59,9 @@ const JobShowPage = ({ deleteJob }) => {
                                 >Edit Job</Link>
                                 <button
                                     className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-                                    onClick={() => handleDelete(job.id)}
+                                    onClick={handleDeleteClick}
                                 >
-                                    Delete Job
+                                    Delete Job {<DeleteIcon />}
                                 </button>
                             </div>
                         </aside>
