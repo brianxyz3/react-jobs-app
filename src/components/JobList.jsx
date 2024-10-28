@@ -7,13 +7,16 @@ const JobList = ({ isHome = false }) => {
     const [loading, setLoading] = useState(true);
 
     // getting data from api using useEffect
-    const apiUrl = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
+    const apiUrl = "/api/jobs";
 
     useEffect(() => {
         const getJobs = async () => {
             try {
                 const res = await fetch(apiUrl);
                 const data = await res.json();
+                const limit = data.length;
+                const start = limit - 3;
+                if (isHome) return setJobs(data.slice(start, limit));
                 return setJobs(data);
             } catch (error) {
                 return console.log("Error fetching data, " + error);
