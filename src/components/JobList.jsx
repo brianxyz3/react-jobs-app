@@ -38,7 +38,7 @@ const JobList = ({ isHome = false }) => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {jobs.map((job) => {
                                 return (
-                                    <JobListing key={job.id} type={job.type} title={job.title} description={job.description} salary={job.salary} location={job.location} id={job.id} />
+                                    <JobListing key={job._id} type={job.type} title={job.title} description={job.description} salary={job.salary} location={job.location} id={job._id} />
                                 )
                             })}
                         </div>

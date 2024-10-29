@@ -76,7 +76,7 @@ const AddJobPage = ({ addJob }) => {
         const newJob = { ...data, id: uuid() };
         addJob(newJob);
         toast.success("Job listing successfully added");
-        return navigate(`/jobs/${newJob.id}`);
+        return navigate("/jobs");
     }
 
     return (

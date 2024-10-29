@@ -31,7 +31,7 @@ const JobShowPage = ({ deleteJob }) => {
 
     return (
         <>
-            {showPopup && <DeleteConfirmPopup id={job.id} onConfirm={confirmDelete} onCancel={cancel} />}
+            {showPopup && <DeleteConfirmPopup id={job._id} onConfirm={confirmDelete} onCancel={cancel} />}
             <section>
                 <div className="container m-auto py-6 px-6">
                     <Link
@@ -54,7 +54,7 @@ const JobShowPage = ({ deleteJob }) => {
                             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                                 <Link
-                                    to={`/edit-job/${job.id}`}
+                                    to={`/edit-job/${job._id}`}
                                     className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
                                 >Edit Job</Link>
                                 <button
