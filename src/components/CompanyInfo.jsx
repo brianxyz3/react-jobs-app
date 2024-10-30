@@ -1,4 +1,4 @@
-const CompanyInfo = ({ company }) => {
+const CompanyInfo = ({ company, contact }) => {
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-bold mb-6">Company Info</h3>
@@ -14,12 +14,12 @@ const CompanyInfo = ({ company }) => {
             <h3 className="text-xl">Contact Email:</h3>
 
             <p className="my-2 bg-indigo-100 p-2 font-bold">
-                {company.contactEmail}
+                {contact.email}
             </p>
 
             <h3 className="text-xl">Contact Phone:</h3>
 
-            <p className="my-2 bg-indigo-100 p-2 font-bold">{company.contactPhone}</p>
+            <p className="my-2 bg-indigo-100 p-2 font-bold">{contact.phone}</p>
         </div>)
 }
 

@@ -27,16 +27,17 @@ const types = [
 ];
 
 const salaries = [
+    "Undisclosed",
     "Under $50K",
-    "$50K - $60K",
-    "$60K - $70K",
-    "$70K - $80K",
-    "$80K - $90K",
-    "$90K - $100K",
-    "$100K - $125K",
-    "$125K - $150K",
-    "$150K - $175K",
-    "$175K - $200K",
+    "$50K - 60K",
+    "$60K - 70K",
+    "$70K - 80K",
+    "$80K - 90K",
+    "$90K - 100K",
+    "$100K - 125K",
+    "$125K - 150K",
+    "$150K - 175K",
+    "$175K - 200K",
     "Over $200K",
 ];
 const EditJobPage = ({ updateJob }) => {
@@ -68,6 +69,9 @@ const EditJobPage = ({ updateJob }) => {
         },
         name: {
             required: "Company name cannot be blank",
+        },
+        email: {
+            required: "Company Contact email cannot be blank",
         }
     }
 
@@ -117,7 +121,7 @@ const EditJobPage = ({ updateJob }) => {
                             >Job Listing Name</label>
                             <TextField
                                 fullWidth
-                                error={errors.title ? true : false}
+                                error={Boolean(errors.title)}
                                 id="title"
                                 label="Title"
                                 defaultValue={job.title}
@@ -132,14 +136,12 @@ const EditJobPage = ({ updateJob }) => {
                             >Description</label>
                             <TextField
                                 fullWidth
-                                error={errors.description ? true : false}
                                 maxRows={4}
                                 id="description"
                                 label="Description"
                                 defaultValue={job.description}
-                                {...register("description", validateForm.description)}
+                                {...register("description")}
                             />
-                            {errors.description && <span style={errorStyle}>{validateForm.description.required}</span>}
                         </div>
 
 
@@ -174,7 +176,7 @@ const EditJobPage = ({ updateJob }) => {
                             </label>
                             <TextField
                                 fullWidth
-                                error={errors.location ? true : false}
+                                error={Boolean(errors.location)}
                                 id="location"
                                 label="Location"
                                 defaultValue={job.location}
@@ -190,7 +192,7 @@ const EditJobPage = ({ updateJob }) => {
                             >Company Name</label>
                             <TextField
                                 fullWidth
-                                error={errors.company ? true : false}
+                                error={Boolean(errors.company)}
                                 id="name"
                                 label="Name"
                                 defaultValue={job.company.name}
@@ -219,12 +221,14 @@ const EditJobPage = ({ updateJob }) => {
                             >Contact Email</label>
                             <TextField
                                 fullWidth
+                                error={Boolean(errors.contact)}
                                 type="email"
                                 id="email"
                                 label="Company Email"
-                                defaultValue={job.company.contactEmail}
-                                {...register("company.contactEmail")}
+                                defaultValue={job.contact.email}
+                                {...register("contact.email", validateForm.email)}
                             />
+                            {errors.contact && <span style={errorStyle}>{validateForm.email.required}</span>}
                         </div>
 
                         <div className="mb-4">
@@ -235,8 +239,8 @@ const EditJobPage = ({ updateJob }) => {
                                 fullWidth
                                 id="tel"
                                 label="Company Tel"
-                                defaultValue={job.company.contactPhone}
-                                {...register("company.contactPhone")}
+                                defaultValue={job.contact.phone}
+                                {...register("contact.phone")}
                             />
                         </div>
 

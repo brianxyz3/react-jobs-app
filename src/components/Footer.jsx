@@ -40,10 +40,10 @@ const Footer = () => {
                 </div>
                 <div className="flex gap-4 text-3xl text-slate-400 p-8">
                     <FaFacebook />
-                    <FaLinkedin />
+                    <a href="https://linkedin.com/in/brian-chima-xyz" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
                     <FaInstagram />
-                    <FaTwitter />
-                    <FaGithub />
+                    <a href="https://x.com/BrianXYZ_01" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                    <a href="https://github.com/brianxyz3" target="_blank" rel="noopener noreferrer"><FaGithub /></a>
                 </div>
             </div>
             <p className="text-slate-700 text-center mx-7 border-t-2 border-slate-700 p-3">&copy; {new Date().getFullYear()} ReactDevJobs, Inc. All rights reserved.</p>
@@ -51,4 +51,4 @@ const Footer = () => {
     )
 }
 
-export default Footer;
+export default Footer; 

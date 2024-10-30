@@ -28,6 +28,7 @@ const types = [
 ];
 
 const salaries = [
+    "Undisclosed",
     "Under $50K",
     "$50K - 60K",
     "$60K - 70K",
@@ -69,14 +70,17 @@ const AddJobPage = ({ addJob }) => {
         },
         name: {
             required: "Company name cannot be blank",
+        },
+        email: {
+            required: "Company Contact email cannot be blank",
         }
     }
 
-    const submitAddForm = (data) => {
+    const submitAddForm = async (data) => {
         const newJob = { ...data, id: uuid() };
-        addJob(newJob);
+        const newJobData = await addJob(newJob);
         toast.success("Job listing successfully added");
-        return navigate("/jobs");
+        return navigate(`/jobs/${newJobData._id}`);
     }
 
     return (
@@ -117,7 +121,7 @@ const AddJobPage = ({ addJob }) => {
                             >Job Listing Name</label>
                             <TextField
                                 fullWidth
-                                error={errors.title ? true : false}
+                                error={Boolean(errors.title)}
                                 id="title"
                                 label="Title"
                                 placeholder="eg. Beautiful Apartment In Miami"
@@ -132,14 +136,12 @@ const AddJobPage = ({ addJob }) => {
                             >Description</label>
                             <TextField
                                 fullWidth
-                                error={errors.description ? true : false}
                                 maxRows={4}
                                 id="description"
                                 label="Description"
                                 placeholder="Add any job duties, expectations, requirements, etc"
-                                {...register("description", validateForm.description)}
+                                {...register("description")}
                             />
-                            {errors.description && <span style={errorStyle}>{validateForm.description.required}</span>}
                         </div>
 
 
@@ -174,7 +176,7 @@ const AddJobPage = ({ addJob }) => {
                             </label>
                             <TextField
                                 fullWidth
-                                error={errors.location ? true : false}
+                                error={Boolean(errors.location)}
                                 id="location"
                                 label="Location"
                                 placeholder="Company Location"
@@ -190,7 +192,7 @@ const AddJobPage = ({ addJob }) => {
                             >Company Name</label>
                             <TextField
                                 fullWidth
-                                error={errors.company ? true : false}
+                                error={Boolean(errors.company)}
                                 id="name"
                                 label="Name"
                                 placeholder="Company Name"
@@ -219,12 +221,14 @@ const AddJobPage = ({ addJob }) => {
                             >Contact Email</label>
                             <TextField
                                 fullWidth
+                                error={Boolean(errors.contact)}
                                 type="email"
                                 id="email"
                                 label="Company Email"
                                 placeholder="Email address for applicants"
-                                {...register("company.contactEmail")}
+                                {...register("contact.email", validateForm.email)}
                             />
+                            {errors.contact && <span style={errorStyle}>{validateForm.email.required}</span>}
                         </div>
 
                         <div className="mb-4">
@@ -236,7 +240,7 @@ const AddJobPage = ({ addJob }) => {
                                 id="tel"
                                 label="Company Tel"
                                 placeholder="Optional phone for applicants"
-                                {...register("company.contactPhone")}
+                                {...register("contact.phone")}
                             />
                         </div>
 
