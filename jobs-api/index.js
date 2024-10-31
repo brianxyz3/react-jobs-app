@@ -5,13 +5,16 @@ if (process.env.NODE_ENV !== "production") {
 }
 import express from "express";
 import mongoose from "mongoose";
+import session from "express-session";
+
 import Job from "./model/job.js";
+import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
 import validateJob from "./middleware.js";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
-
+const secret = process.env.HIDDEN || "somethingonlythedevsknow";
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(dbUrl);
@@ -23,9 +26,23 @@ db.once("open", () => {
 });
 
 const app = express();
+const sessionConfig = {
+  name: "session",
+  secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 5,
+    maxAge: 1000 * 60 * 60 * 24 * 5,
+  },
+};
+
+app.use(session(sessionConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 app.get(
   "/jobs",
