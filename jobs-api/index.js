@@ -6,7 +6,8 @@ if (process.env.NODE_ENV !== "production") {
 import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
-
+import passport from "passport";
+import LocalStrategy from "passport-local";
 import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
@@ -42,7 +43,15 @@ app.use(session(sessionConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+// app.post("/register", (req, res) => {
+
+// })
 
 app.get(
   "/jobs",
