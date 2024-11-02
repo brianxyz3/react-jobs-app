@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
+import Footer from "../components/Footer";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -79,11 +80,15 @@ const AddJobPage = ({ addJob }) => {
     const submitAddForm = async (data) => {
         const newJob = { ...data, id: uuid() };
         const newJobData = await addJob(newJob);
+        console.log(newJobData)
+        console.log("###########################")
+        console.log(newJob)
         toast.success("Job listing successfully added");
         return navigate(`/jobs/${newJobData._id}`);
     }
 
     return (
+        <>
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-24">
                 <div
@@ -256,6 +261,9 @@ const AddJobPage = ({ addJob }) => {
                 </div>
             </div>
         </section>
+            <Footer />
+        </>
+
     )
 }
 

@@ -7,6 +7,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
+import Footer from "../components/Footer";
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -84,6 +86,7 @@ const EditJobPage = ({ updateJob }) => {
         return navigate(`/jobs/${id}`)
     }
     return (
+        <>
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-24">
                 <div
@@ -261,7 +264,10 @@ const EditJobPage = ({ updateJob }) => {
                     </button>
                 </div>
             </div>
-        </section>)
+            </section>
+            <Footer />
+        </>
+    )
 }
 
 export default EditJobPage;

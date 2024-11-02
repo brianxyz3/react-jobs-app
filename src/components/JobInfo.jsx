@@ -1,3 +1,4 @@
+import validator from "validator";
 import { FaMapMarker } from "react-icons/fa";
 
 const JobInfo = ({ job }) => {
@@ -8,7 +9,7 @@ const JobInfo = ({ job }) => {
             >
                 <div className="text-gray-500 mb-4">{job.type}</div>
                 <h1 className="text-3xl font-bold mb-4">
-                    {job.title}
+                    {validator.unescape(job.title)}
                 </h1>
                 <div
                     className="text-gray-500 mb-4 flex align-middle justify-center md:justify-start"
@@ -16,7 +17,7 @@ const JobInfo = ({ job }) => {
                     <FaMapMarker
                         className="text-lg text-orange-700 mr-2"
                     />
-                    <p className="text-orange-700">{job.location}</p>
+                    <p className="text-orange-700">{validator.unescape(job.location)}</p>
                 </div>
             </div>
 
@@ -26,7 +27,7 @@ const JobInfo = ({ job }) => {
                 </h3>
 
                 <p className="mb-4">
-                    {job.description}
+                    {validator.unescape(job.description)}
                 </p>
 
                 <h3 className="text-indigo-800 text-lg font-bold mb-2">Salary</h3>

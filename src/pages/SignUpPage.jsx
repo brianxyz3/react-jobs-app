@@ -9,6 +9,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import logo from "../assets/images/logo.png";
+import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +29,7 @@ const SignUpPage = () => {
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
                             <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign up to join us</h3>
-                            <p className="text-slate-6s00">Already a member? <a className="md:mt-2 text-indigo-400 hover:text-indigo-500" href="">Login in</a></p>
+                            <p className="text-slate-6s00">Already a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/login">Login</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
                             <TextField fullWidth size="small" id="outlined-basic" label="First Name" variant="outlined" />

@@ -46,7 +46,6 @@ const Footer = () => {
                     <a href="https://github.com/brianxyz3" target="_blank" rel="noopener noreferrer"><FaGithub /></a>
                 </div>
             </div>
-            <p className="text-slate-700 text-center mx-7 border-t-2 border-slate-700 p-3">&copy; {new Date().getFullYear()} ReactDevJobs, Inc. All rights reserved.</p>
         </footer>
     )
 }

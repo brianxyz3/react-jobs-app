@@ -12,7 +12,7 @@ import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
-import validateJob from "./middleware.js";
+import sanitizeJob from "./middleware.js";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
@@ -64,7 +64,7 @@ app.get(
 
 app.post(
   "/jobs",
-  validateJob,
+  sanitizeJob,
   catchAsync(async (req, res) => {
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
     const newJob = new Job(req.body);
@@ -86,7 +86,7 @@ app.get(
 
 app.put(
   "/jobs/:id",
-  validateJob,
+  sanitizeJob,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const updatedJob = await Job.findByIdAndUpdate(id, req.body);

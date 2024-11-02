@@ -1,16 +1,23 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { TextField, FormControlLabel, Checkbox } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 
 const LoginPage = () => {
+    const {
+        handleSubmit,
+        register,
+        watch,
+        formState: { errors },
+    } = useForm({ mode: "onChange" });
+
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -19,30 +26,33 @@ const LoginPage = () => {
         evt.preventDefault();
     };
 
+
+
+
     return (
-        <section className="">
+        <section>
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
                 <div className="w-10/12 md:w-5/12 p-12">
-                    <form >
-                        <div className="mb-9 ">
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-9">
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
-                            <h3 className="font-bold text-2xl text-slate-900 mb-2">Signin to your account</h3>
-                            <p className="text-slate-6s00">Not a member? <a className="md:mt-2 text-indigo-400 hover:text-indigo-500" href="">Sign Up</a></p>
+                            <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign in to your account</h3>
+                            <p className="text-slate-6s00">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
-                            <TextField fullWidth size="small" id="outlined-basic" label="Email" variant="outlined" />
+                            <TextField fullWidth error={errors.email} size="small" id="outlined-basic" label="Email" variant="outlined" {...register("email", { required: true })} />
 
                             <FormControl fullWidth variant="outlined" size='small'>
-                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                <InputLabel htmlFor="outlined-adornment-password" error={errors.password} {...register("password", { required: true })}>Password</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password"
-                                    type={showPassword ? 'text' : 'password'}
+                                    type={showPassword ? "text" : "password"}
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton
                                                 aria-label={
-                                                    showPassword ? 'hide the password' : 'display the password'
+                                                    showPassword ? "hide the password" : "display the password"
                                                 }
                                                 onClick={handleClickShowPassword}
                                                 onMouseDown={handleEvtDefault}

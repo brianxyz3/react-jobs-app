@@ -25,19 +25,19 @@ const extension = (joi) => ({
 const Joi = BaseJoi.extend(extension);
 
 const jobSchema = Joi.object({
-  job: Joi.object({
-    type: Joi.string().required().escapeHTML(),
-    title: Joi.string().required().escapeHTML(),
-    location: Joi.string().required().escapeHTML(),
+  type: Joi.string().required().escapeHTML(),
+  title: Joi.string().required().escapeHTML(),
+  location: Joi.string().required().escapeHTML(),
+  description: Joi.string().escapeHTML(),
+  salary: Joi.string().required().escapeHTML(),
+  company: {
+    name: Joi.string().required().escapeHTML(),
     description: Joi.string().escapeHTML(),
-    salary: Joi.string().required().escapeHTML(),
-    company: {
-      name: Joi.string().required().escapeHTML(),
-    },
-    conatact: {
-      email: Joi.string().required().escapeHTML(),
-    },
-  }).required(),
-});
+  },
+  conatact: {
+    email: Joi.string().required().escapeHTML(),
+    phone: Joi.string().escapeHTML(),
+  },
+}).required();
 
 export default jobSchema;

@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import JobInfo from "../components/JobInfo";
 import DeleteConfirmPopup from "../components/DeleteConfirmPopup";
 import CompanyInfo from "../components/CompanyInfo";
+import Footer from "../components/Footer";
 
 
 const JobShowPage = ({ deleteJob }) => {
@@ -68,6 +69,7 @@ const JobShowPage = ({ deleteJob }) => {
                     </div>
                 </div>
             </section>
+            <Footer />
         </>
     )
 }
