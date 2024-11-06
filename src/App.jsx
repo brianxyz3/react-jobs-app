@@ -22,7 +22,7 @@ function App() {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<MainLayout token={localStorage.token} />}>
+      <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="/register" element={<SignUpPage registerUser={registerUser} />} />
         <Route path="/login" element={<LoginPage loginUser={loginUser} />} />

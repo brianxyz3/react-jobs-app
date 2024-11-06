@@ -57,10 +57,10 @@ const SignUpPage = ({ registerUser }) => {
             if (data.password === data.confirmPassword) {
                 const user = { ...data, username: data.email };
                 const newUser = await registerUser(user);
-                toast.success("User Successfully Registered");
-                localStorage.setItem("token", newUser.token)
-                if (localStorage.token) {
+                if (newUser.token) {
+                    localStorage.setItem("token", newUser.token)
                     navigate("/jobs");
+                    toast.success("User Successfully Registered");
                 }
             } else {
                 toast.error("Password does not match");

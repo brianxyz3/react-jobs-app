@@ -71,7 +71,10 @@ app.post(
           throw new ExpressError(500, "Something Went Wrong");
         }
         req.login(registeredUser, (err) => {
-          if (err) return next(err);
+          if (err) {
+            res.json("");
+            return next(err);
+          }
           const token = jwt.sign(
             { id: registeredUser._id },
             "secretUserToken",
@@ -90,10 +93,8 @@ app.post(
 
 app.post(
   "/login",
-  passport.authenticate("local", {
-    failureFlash: false,
-    failureRedirect: "/login",
-  }),
+  //removed args
+  passport.authenticate("local"),
   catchAsync(async (req, res) => {
     console.log("GOT HERE");
     const { username } = req.body;
