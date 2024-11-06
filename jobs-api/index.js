@@ -7,16 +7,19 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import passport from "passport";
-import LocalStrategy from "passport-local";
+import localStrategy from "passport-local";
+import jwt from "jsonwebtoken";
 import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
-import sanitizeJob from "./middleware.js";
+import { sanitizeJob, isLoggedIn } from "./middleware.js";
+import validator from "validator";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
 const PORT = process.env.PORT || 5000;
+const jwtToken = process.env.JWT_TOKEN || "secretUserToken";
 
 mongoose.connect(dbUrl);
 
@@ -45,18 +48,68 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// app.post("/register", (req, res) => {
+app.post(
+  "/register",
+  catchAsync(async (req, res, next) => {
+    try {
+      const {
+        username,
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+      } = req.body;
+      if (validator.equals(password, confirmPassword)) {
+        const user = new User({ username, email, firstName, lastName });
+        const registeredUser = await User.register(user, password);
+        if (!registeredUser) {
+          throw new ExpressError(500, "Something Went Wrong");
+        }
+        req.login(registeredUser, (err) => {
+          if (err) return next(err);
+          const token = jwt.sign(
+            { id: registeredUser._id },
+            "secretUserToken",
+            {
+              expiresIn: "1h",
+            }
+          );
+          res.status(200).json({ token });
+        });
+      }
+    } catch (err) {
+      console.log("Backend err " + err);
+    }
+  })
+);
 
-// })
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureFlash: false,
+    failureRedirect: "/login",
+  }),
+  catchAsync(async (req, res) => {
+    console.log("GOT HERE");
+    const { username } = req.body;
+    const user = await User.findByUsername(username);
+    console.log(user);
+    const token = jwt.sign({ id: user._id }, "secretUserToken", {
+      expiresIn: "1h",
+    });
+    console.log(token);
+    res.status(200).json({ token });
+  })
+);
 
 app.get(
   "/jobs",
   catchAsync(async (req, res) => {
-    console.log(req);
     const jobs = await Job.find();
     res.status(200).json(jobs);
   })
@@ -65,6 +118,7 @@ app.get(
 app.post(
   "/jobs",
   sanitizeJob,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
     const newJob = new Job(req.body);
@@ -87,6 +141,7 @@ app.get(
 app.put(
   "/jobs/:id",
   sanitizeJob,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const updatedJob = await Job.findByIdAndUpdate(id, req.body);

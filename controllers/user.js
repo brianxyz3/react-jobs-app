@@ -1,4 +1,4 @@
-const register = async (newUser) => {
+const registerUser = async (newUser) => {
   try {
     const res = await fetch("/api/register", {
       method: "POST",
@@ -7,12 +7,14 @@ const register = async (newUser) => {
       },
       body: JSON.stringify(newUser),
     });
+    const data = await res.json();
+    return data;
   } catch (err) {
     return console.log(`An Error Occurred, ${err}`);
   }
 };
 
-const login = async (user) => {
+const loginUser = async (user) => {
   try {
     const res = await fetch("/api/login", {
       method: "POST",
@@ -21,7 +23,11 @@ const login = async (user) => {
       },
       body: JSON.stringify(user),
     });
+    const data = await res.json();
+    return data;
   } catch (err) {
     return console.log(`An Error Occurred, ${err}`);
   }
 };
+
+export { registerUser, loginUser };

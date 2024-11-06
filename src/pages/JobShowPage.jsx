@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete"
 import JobInfo from "../components/JobInfo";
-import DeleteConfirmPopup from "../components/DeleteConfirmPopup";
+import ConfirmPopup from "../components/ConfirmPopup";
 import CompanyInfo from "../components/CompanyInfo";
 import Footer from "../components/Footer";
 
@@ -32,7 +32,7 @@ const JobShowPage = ({ deleteJob }) => {
 
     return (
         <>
-            {showPopup && <DeleteConfirmPopup id={job._id} onConfirm={confirmDelete} onCancel={cancel} />}
+            {showPopup && <ConfirmPopup id={job._id} onConfirm={confirmDelete} onCancel={cancel} text="Delete" />}
             <section>
                 <div className="container m-auto py-6 px-6">
                     <Link

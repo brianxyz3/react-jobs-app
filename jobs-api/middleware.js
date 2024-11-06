@@ -17,4 +17,11 @@ const sanitizeJob = (req, res, next) => {
   }
 };
 
-export default sanitizeJob;
+const isLoggedIn = (req, res, next) => {
+  if (req.body.token) {
+    return next();
+  }
+  throw new ExpressError(401, "Unknown User, Please Login");
+};
+
+export { sanitizeJob, isLoggedIn };

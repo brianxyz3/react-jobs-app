@@ -77,10 +77,15 @@ const EditJobPage = ({ updateJob }) => {
         }
     }
 
-    const submitEditForm = (updatedJob) => {
-        updateJob(updatedJob, id);
-        toast.success("Job listing successfully updated");
-        return navigate(`/jobs/${id}`);
+    const submitEditForm = (data) => {
+        if (localStorage.token) {
+            const updatedJob = { ...data, token: localStorage.token };
+            updateJob(updatedJob, id);
+            toast.success("Job listing successfully updated");
+            return navigate(`/jobs/${id}`);
+        } else {
+            navigate("/login");
+        }
     }
     const backToJob = () => {
         return navigate(`/jobs/${id}`)

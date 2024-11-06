@@ -4,10 +4,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CopyrightFooter from "../components/CopyrightFooter";
 
-const MainLayout = () => {
+const MainLayout = ({ token = "" }) => {
     return (
         <>
-            <NavBar />
+            <NavBar token={token} />
             <Outlet />
             <CopyrightFooter />
             <ToastContainer />

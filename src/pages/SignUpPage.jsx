@@ -7,12 +7,44 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
-const SignUpPage = () => {
+const SignUpPage = ({ registerUser }) => {
+    const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm();
+
     const [showPassword, setShowPassword] = useState(false);
+
+    const errorStyle = { color: "red" }
+
+    const validateForm = {
+        firstName: {
+            required: "First Name is Required"
+        },
+        lastName: {
+            required: "Last Name is Required"
+        },
+        email: {
+            required: "Email is Required"
+        },
+        password: {
+            required: "Password is Required"
+        },
+        confirmPassword: {
+            required: "Confirm Password is Required"
+        },
+        matchPassword: {
+            required: "Password Must Match Confirm Password"
+        },
+    };
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -20,26 +52,57 @@ const SignUpPage = () => {
         evt.preventDefault();
     };
 
+    const handleRegister = async (data) => {
+        try {
+            if (data.password === data.confirmPassword) {
+                const user = { ...data, username: data.email };
+                const newUser = await registerUser(user);
+                toast.success("User Successfully Registered");
+                localStorage.setItem("token", newUser.token)
+                if (localStorage.token) {
+                    navigate("/jobs");
+                }
+            } else {
+                toast.error("Password does not match");
+                return navigate("/register");
+            }
+        } catch (err) {
+            toast.error("Something Went Wrong. Try Again");
+        }
+
+
+    }
+
     return (
-        <section className="">
+        <section>
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
                 <div className="w-10/12 md:w-5/12 p-12">
-                    <form >
+                    <form onSubmit={handleSubmit(handleRegister)} >
                         <div className="mb-9 ">
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
                             <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign up to join us</h3>
                             <p className="text-slate-6s00">Already a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/login">Login</Link></p>
                         </div>
-                        <div className="flex flex-col gap-8">
-                            <TextField fullWidth size="small" id="outlined-basic" label="First Name" variant="outlined" />
-                            <TextField fullWidth size="small" id="outlined-basic" label="Last Name" variant="outlined" />
-                            <TextField fullWidth size="small" id="outlined-basic" label="Email" variant="outlined" />
+                        <div className="flex flex-col">
+                            <TextField error={Boolean(errors.firstName)} margin="dense" fullWidth size="small" label="First Name" variant="outlined" autoComplete="current-firstName" {...register("firstName", validateForm.firstName)} />
+                            {errors.firstName && <span style={errorStyle}>{validateForm.firstName.required}</span>}
 
-                            <FormControl fullWidth variant="outlined" size='small'>
-                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+
+                            <TextField error={Boolean(errors.lastName)} margin="dense" fullWidth size="small" label="Last Name" variant="outlined" autoComplete="current-lastName" {...register("lastName", validateForm.lastName)} />
+                            {errors.lastName && <span style={errorStyle}>{validateForm.lastName.required}</span>}
+
+
+                            <TextField error={Boolean(errors.email)} margin="dense" fullWidth size="small" label="Email" type="email" variant="outlined" autoComplete="current-email" {...register("email", validateForm.email)} />
+                            {errors.email && <span style={errorStyle}>{validateForm.email.required}</span>}
+
+
+                            <FormControl margin="dense" fullWidth variant="outlined" size='small'>
+                                <InputLabel htmlFor="password">Password</InputLabel>
                                 <OutlinedInput
-                                    id="outlined-adornment-password"
+                                    id="password"
+                                    error={Boolean(errors.password)}
+                                    autoComplete="current-password"
                                     type={showPassword ? 'text' : 'password'}
                                     endAdornment={
                                         <InputAdornment position="end">
@@ -57,16 +120,22 @@ const SignUpPage = () => {
                                         </InputAdornment>
                                     }
                                     label="Password"
+                                    {...register("password", validateForm.password)}
                                 />
                             </FormControl>
+                            {errors.password && <span style={errorStyle}>{validateForm.password.required}</span>}
 
 
-                            <TextField
+                            <TextField 
+                                error={Boolean(errors.confirmPassword)}
+                                margin="dense"
                                 fullWidth
                                 size="small"
-                                id="outlined-password-input"
+                                id="confirmPassword"
                                 label="Confirm Password"
+                                autoComplete="current-password"
                                 type={showPassword ? 'text' : 'password'}
+                                {...register("confirmPassword", validateForm.confirmPassword)}
                             />
                             <div className="mb-5">
                                 <FormControlLabel required control={<Checkbox />} label="Terms and Conditions" />

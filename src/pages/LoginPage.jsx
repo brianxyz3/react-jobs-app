@@ -7,16 +7,17 @@ import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
+import { toast } from "react-toastify";
 
-const LoginPage = () => {
+const LoginPage = ({ loginUser }) => {
     const {
         handleSubmit,
         register,
-        watch,
         formState: { errors },
     } = useForm({ mode: "onChange" });
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -26,14 +27,25 @@ const LoginPage = () => {
         evt.preventDefault();
     };
 
-
+    const handleLogin = async (data) => {
+        const user = await loginUser(data);
+        localStorage.setItem("token", user.token);
+        if (user.token) {
+            localStorage.setItem("token", user.token);
+            navigate("/jobs");
+            toast.success("Welcome Back");
+        } else {
+            toast.error("Incorrect Login Details");
+            return navigate("/login");
+        }
+    }
 
 
     return (
         <section>
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
                 <div className="w-10/12 md:w-5/12 p-12">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit(handleLogin)}>
                         <div className="mb-9">
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
@@ -41,12 +53,15 @@ const LoginPage = () => {
                             <p className="text-slate-6s00">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
-                            <TextField fullWidth error={errors.email} size="small" id="outlined-basic" label="Email" variant="outlined" {...register("email", { required: true })} />
+                            <TextField fullWidth error={Boolean(errors.email)} size="small" label="Email" variant="outlined" autoComplete="email" {...register("username", { required: true })} />
 
                             <FormControl fullWidth variant="outlined" size='small'>
-                                <InputLabel htmlFor="outlined-adornment-password" error={errors.password} {...register("password", { required: true })}>Password</InputLabel>
+                                <InputLabel htmlFor="password">Password</InputLabel>
                                 <OutlinedInput
-                                    id="outlined-adornment-password"
+                                    error={Boolean(errors.password)}
+                                    {...register("password", { required: true })}
+                                    id="password"
+                                    autoComplete="current-password"
                                     type={showPassword ? "text" : "password"}
                                     endAdornment={
                                         <InputAdornment position="end">
