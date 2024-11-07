@@ -1,18 +1,17 @@
 const addJobSubmit = async (newJob) => {
-      try {
-        const res = await fetch("/api/jobs", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newJob),
-        });
-        console.log("Hit here");
-        const data = await res.json();
-        return data;
-      } catch (err) {
-        return console.log(`An error occurred, ${err}`);
-      }
+  try {
+    const res = await fetch("/api/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newJob),
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return console.log(`An error occurred, ${err}`);
+  }
 };
 
 const updateJobSubmit = async (job, id) => {
@@ -24,7 +23,8 @@ const updateJobSubmit = async (job, id) => {
       },
       body: JSON.stringify(job),
     });
-    return;
+    const data = await res.json();
+    return data;
   } catch (err) {
     return console.log(`An error occurred, ${err}`);
   }
@@ -32,7 +32,9 @@ const updateJobSubmit = async (job, id) => {
 
 const deleteJob = async (id) => {
   try {
-    const res = await fetch(`/api/jobs/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/jobs/${id}`, {
+      method: "DELETE",
+    });
     return;
   } catch (err) {
     return console.log(`An error occurred, ${err}`);

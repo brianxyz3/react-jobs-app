@@ -47,6 +47,10 @@ const JobSchema = new Schema({
     },
     phone: String,
   },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 export default mongoose.model("Job", JobSchema);

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import passportLocalMongoose from "passport-local-mongoose";
+import Job from "./job.js";
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -16,6 +17,12 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  jobListings: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Job",
+    },
+  ],
 });
 UserSchema.plugin(passportLocalMongoose);
 

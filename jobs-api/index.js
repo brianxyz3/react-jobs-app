@@ -13,13 +13,12 @@ import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
-import { sanitizeJob, isLoggedIn } from "./middleware.js";
+import { sanitizeJob, isLoggedIn, isAuthor } from "./middleware.js";
 import validator from "validator";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
 const PORT = process.env.PORT || 5000;
-const jwtToken = process.env.JWT_TOKEN || "secretUserToken";
 
 mongoose.connect(dbUrl);
 
@@ -71,18 +70,11 @@ app.post(
           throw new ExpressError(500, "Something Went Wrong");
         }
         req.login(registeredUser, (err) => {
-          if (err) {
-            res.json("");
-            return next(err);
-          }
-          const token = jwt.sign(
-            { id: registeredUser._id },
-            "secretUserToken",
-            {
-              expiresIn: "1h",
-            }
-          );
-          res.status(200).json({ token });
+          if (err) return next(err);
+          const token = jwt.sign({ id: registeredUser._id }, "userToken", {
+            expiresIn: "1h",
+          });
+          res.status(200).json({ token, id: registeredUser._id });
         });
       }
     } catch (err) {
@@ -93,18 +85,16 @@ app.post(
 
 app.post(
   "/login",
-  //removed args
   passport.authenticate("local"),
   catchAsync(async (req, res) => {
     console.log("GOT HERE");
     const { username } = req.body;
     const user = await User.findByUsername(username);
     console.log(user);
-    const token = jwt.sign({ id: user._id }, "secretUserToken", {
+    const token = jwt.sign({ id: user._id }, "userToken", {
       expiresIn: "1h",
     });
-    console.log(token);
-    res.status(200).json({ token });
+    res.status(200).json({ token, id: user._id });
   })
 );
 
@@ -125,6 +115,8 @@ app.post(
     const newJob = new Job(req.body);
     if (!newJob) throw ExpressError(400, "Invalid Job Data Input(s)");
     await newJob.save();
+    const user = await User.findById(newJob.author);
+    user.jobListings.push(newJob._id);
     res.status(201).json(newJob);
   })
 );
@@ -142,7 +134,7 @@ app.get(
 app.put(
   "/jobs/:id",
   sanitizeJob,
-  isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const updatedJob = await Job.findByIdAndUpdate(id, req.body);

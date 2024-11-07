@@ -1,5 +1,6 @@
 import validator from "validator";
 import ExpressError from "./utilities/ExpressError.js";
+import Job from "./model/job.js";
 
 const sanitizeJob = (req, res, next) => {
   try {
@@ -24,4 +25,12 @@ const isLoggedIn = (req, res, next) => {
   throw new ExpressError(401, "Unknown User, Please Login");
 };
 
-export { sanitizeJob, isLoggedIn };
+const isAuthor = async (req, res, next) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  const job = await Job.findById(id);
+  if (job.author.equals(userId)) return next();
+  return res.json("Unauthorized User");
+};
+
+export { sanitizeJob, isLoggedIn, isAuthor };

@@ -10,7 +10,7 @@ const registerUser = async (newUser) => {
     const data = await res.json();
     return data;
   } catch (err) {
-    return console.log(`An Error Occurred, ${err}`);
+    return err;
   }
 };
 
@@ -26,7 +26,7 @@ const loginUser = async (user) => {
     const data = await res.json();
     return data;
   } catch (err) {
-    return console.log(`An Error Occurred, ${err}`);
+    return err;
   }
 };
 
