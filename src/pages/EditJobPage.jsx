@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
+import validator from "validator";
 import Footer from "../components/Footer";
 
 
@@ -77,10 +78,11 @@ const EditJobPage = ({ updateJob }) => {
         }
     }
 
-    const submitEditForm = (data) => {
-        if (localStorage.token) {
-            const updatedJob = { ...data, token: localStorage.token };
-            updateJob(updatedJob, id);
+    const submitEditForm = async (data) => {
+        if (localStorage.token && localStorage.userId === job.author) {
+            const updatedJob = { ...data, token: localStorage.token, userId: localStorage.userId };
+            const res = await updateJob(updatedJob, id);
+            if (res === "Unauthorized User") return toast.error(res);
             toast.success("Job listing successfully updated");
             return navigate(`/jobs/${id}`);
         } else {
@@ -108,7 +110,7 @@ const EditJobPage = ({ updateJob }) => {
                                 <Select
                                     labelId="type"
                                     input={<OutlinedInput label="type" />}
-                                    defaultValue={job.type}
+                                        defaultValue={(job.type)}
                                     MenuProps={MenuProps}
                                     {...register("type")}
                                 >
@@ -132,7 +134,7 @@ const EditJobPage = ({ updateJob }) => {
                                 error={Boolean(errors.title)}
                                 id="title"
                                 label="Title"
-                                defaultValue={job.title}
+                                    defaultValue={validator.unescape(job.title)}
                                 {...register("title", validateForm.title)}
                             />
                             {errors.title && <span style={errorStyle}>{validateForm.title.required}</span>}
@@ -147,7 +149,7 @@ const EditJobPage = ({ updateJob }) => {
                                 maxRows={4}
                                 id="description"
                                 label="Description"
-                                defaultValue={job.description}
+                                    defaultValue={validator.unescape(job.description)}
                                 {...register("description")}
                             />
                         </div>
@@ -187,7 +189,7 @@ const EditJobPage = ({ updateJob }) => {
                                 error={Boolean(errors.location)}
                                 id="location"
                                 label="Location"
-                                defaultValue={job.location}
+                                    defaultValue={validator.unescape(job.location)}
                                 {...register("location", validateForm.location)}
                             />
                             {errors.location && <span style={errorStyle}>{validateForm.location.required}</span>}
@@ -203,7 +205,7 @@ const EditJobPage = ({ updateJob }) => {
                                 error={Boolean(errors.company)}
                                 id="name"
                                 label="Name"
-                                defaultValue={job.company.name}
+                                    defaultValue={validator.unescape(job.company.name)}
                                 {...register("company.name", validateForm.name)}
                             />
                             {errors.company && <span style={errorStyle}>{validateForm.name.required}</span>}
@@ -217,7 +219,7 @@ const EditJobPage = ({ updateJob }) => {
                                 fullWidth
                                 id="description"
                                 label="Description"
-                                defaultValue={job.company.description}
+                                    defaultValue={validator.unescape(job.company.description)}
                                 maxRows={4}
                                 {...register("company.description")}
                             />
@@ -233,7 +235,7 @@ const EditJobPage = ({ updateJob }) => {
                                 type="email"
                                 id="email"
                                 label="Company Email"
-                                defaultValue={job.contact.email}
+                                    defaultValue={validator.unescape(job.contact.email)}
                                 {...register("contact.email", validateForm.email)}
                             />
                             {errors.contact && <span style={errorStyle}>{validateForm.email.required}</span>}
@@ -247,7 +249,7 @@ const EditJobPage = ({ updateJob }) => {
                                 fullWidth
                                 id="tel"
                                 label="Company Tel"
-                                defaultValue={job.contact.phone}
+                                    defaultValue={validator.unescape(job.contact.phone)}
                                 {...register("contact.phone")}
                             />
                         </div>

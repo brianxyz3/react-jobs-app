@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { TextField, FormControlLabel, Checkbox } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/images/logo.png";
+import { TextField, FormControlLabel, Checkbox } from "@mui/material";
+import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import logo from "../assets/images/logo.png";
 
 const LoginPage = ({ loginUser }) => {
     const {
@@ -29,14 +25,14 @@ const LoginPage = ({ loginUser }) => {
 
     const handleLogin = async (data) => {
         const user = await loginUser(data);
-        localStorage.setItem("token", user.token);
         if (user.token) {
             localStorage.setItem("token", user.token);
+            localStorage.setItem("userId", user.id);
+            console.log(user);
             navigate("/jobs");
             toast.success("Welcome Back");
         } else {
             toast.error("Incorrect Login Details");
-            return navigate("/login");
         }
     }
 

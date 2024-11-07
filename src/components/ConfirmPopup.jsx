@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ConfirmPopup = ({ id, onConfirm, onCancel, text }) => {
     return (
         <div style={{ background: "rgba(0,0,0,0.8)" }} className="text-center blur-none fixed inset-0 flex justify-center items-center p-3">

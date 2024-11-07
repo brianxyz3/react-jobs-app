@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
@@ -8,7 +8,11 @@ import ConfirmPopup from "./ConfirmPopup";
 const NavBar = () => {
     const [showPopup, setShowPopup] = useState(false);
     const navigate = useNavigate();
-
+    useEffect(() => {
+        if (!localStorage.token) {
+            localStorage.clear();
+        }
+    }, []);
 
 
     const togglePopup = () => { setShowPopup(prevState => !prevState) }

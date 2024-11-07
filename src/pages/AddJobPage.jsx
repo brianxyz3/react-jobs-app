@@ -79,12 +79,13 @@ const AddJobPage = ({ addJob }) => {
 
     const submitAddForm = async (data) => {
         if (localStorage.token) {
-            const newJob = { ...data, id: uuid(), token: localStorage.token };
+            const newJob = { ...data, id: uuid(), token: localStorage.token, author: localStorage.userId };
             const newJobData = await addJob(newJob);
             toast.success("Job listing successfully added");
             return navigate(`/jobs/${newJobData._id}`);
         } else {
             navigate("/login");
+            toast.error("Login To Add New Job Listing")
         }
     }
 

@@ -58,7 +58,8 @@ const SignUpPage = ({ registerUser }) => {
                 const user = { ...data, username: data.email };
                 const newUser = await registerUser(user);
                 if (newUser.token) {
-                    localStorage.setItem("token", newUser.token)
+                    localStorage.setItem("token", newUser.token);
+                    localStorage.setItem("userId", newUser.id);
                     navigate("/jobs");
                     toast.success("User Successfully Registered");
                 }
