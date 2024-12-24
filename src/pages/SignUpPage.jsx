@@ -12,6 +12,8 @@ import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase.config";
 
 const SignUpPage = ({ registerUser }) => {
     const navigate = useNavigate();
@@ -55,12 +57,15 @@ const SignUpPage = ({ registerUser }) => {
     const handleRegister = async (data) => {
         try {
             if (data.password === data.confirmPassword) {
-                const user = { ...data, username: data.email };
-                const newUser = await registerUser(user);
-                if (newUser.token) {
-                    localStorage.setItem("token", newUser.token);
-                    localStorage.setItem("userId", newUser.id);
-                    navigate("/jobs");
+                const { email, password } = data;
+                // await registerUser(user);
+                await createUserWithEmailAndPassword(auth, email, password);
+                const user = auth.currentUser;
+                console.log(user)
+                // localStorage.setItem("userId", newUser.id);
+                if (user) {
+                // localStorage.setItem("userId", newUser.id);
+                // navigate("/jobs");
                     toast.success("User Successfully Registered");
                 }
             } else {
@@ -68,7 +73,9 @@ const SignUpPage = ({ registerUser }) => {
                 return navigate("/register");
             }
         } catch (err) {
-            toast.error("Something Went Wrong. Try Again");
+            const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
+            toast.error(errorMsg);
+            // console.log(errorMsg)
         }
 
 
@@ -83,7 +90,7 @@ const SignUpPage = ({ registerUser }) => {
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
                             <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign up to join us</h3>
-                            <p className="text-slate-6s00">Already a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/login">Login</Link></p>
+                            <p className="text-slate-600">Already a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/login">Login</Link></p>
                         </div>
                         <div className="flex flex-col">
                             <TextField error={Boolean(errors.firstName)} margin="dense" fullWidth size="small" label="First Name" variant="outlined" autoComplete="current-firstName" {...register("firstName", validateForm.firstName)} />
