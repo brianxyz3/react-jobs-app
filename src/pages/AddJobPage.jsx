@@ -8,7 +8,6 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
-import Footer from "../components/Footer";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -262,8 +261,7 @@ const AddJobPage = ({ addJob }) => {
                     </form>
                 </div>
             </div>
-        </section>
-            <Footer />
+            </section>
         </>
 
     )

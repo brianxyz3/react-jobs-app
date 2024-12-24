@@ -8,7 +8,6 @@ import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
 import validator from "validator";
-import Footer from "../components/Footer";
 
 
 const ITEM_HEIGHT = 48;
@@ -272,7 +271,6 @@ const EditJobPage = ({ updateJob }) => {
                 </div>
             </div>
             </section>
-            <Footer />
         </>
     )
 }

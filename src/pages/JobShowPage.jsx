@@ -69,7 +69,6 @@ const JobShowPage = ({ deleteJob }) => {
                     </div>
                 </div>
             </section>
-            <Footer />
         </>
     )
 }

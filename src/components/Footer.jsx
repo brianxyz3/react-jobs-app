@@ -1,6 +1,8 @@
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
+import CopyrightFooter from "./CopyrightFooter";
 const Footer = () => {
     return (
+        <>
         <footer className="bg-indigo-950">
             <div className="flex flex-wrap justify-evenly pt-12">
                 <div className="grid grid-cols-2 text-center text-slate-400 md:grid-cols-4 gap-5 p-10">
@@ -47,6 +49,9 @@ const Footer = () => {
                 </div>
             </div>
         </footer>
+            <CopyrightFooter />
+        </>
+
     )
 }
 
