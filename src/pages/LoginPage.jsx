@@ -6,8 +6,10 @@ import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } fr
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
+import { logInWithEmailAndPassword, logInWithGoogle } from "../../controllers/auth";
+// import { useAuth } from "../firebaseContext/authContext";
 
-const LoginPage = ({ loginUser }) => {
+const LoginPage = () => {
     const {
         handleSubmit,
         register,
@@ -15,7 +17,10 @@ const LoginPage = ({ loginUser }) => {
     } = useForm({ mode: "onChange" });
     const navigate = useNavigate();
 
+
+
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -24,18 +29,33 @@ const LoginPage = ({ loginUser }) => {
     };
 
     const handleLogin = async (data) => {
-        const user = await loginUser(data);
-        if (user.token) {
-            localStorage.setItem("token", user.token);
-            localStorage.setItem("userId", user.id);
-            console.log(user);
-            navigate("/jobs");
-            toast.success("Welcome Back");
-        } else {
-            toast.error("Incorrect Login Details");
+        try {
+            if (!isLoggingIn) {
+                setIsLoggingIn(true);
+                await logInWithEmailAndPassword(data.email, data.password);
+                toast.success("Welcome Back");
+                setTimeout(() => {
+                    navigate("/jobs");
+                }, 3000);
+            }
+        } catch (err) {
+            setIsLoggingIn(false);
+            const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
+            toast.error(errorMsg);
+            navigate("/login");
         }
     }
 
+
+    const handleGoogleLogIn = async () => {
+        if (!isLoggingIn) {
+            setIsLoggingIn(true);
+            logInWithGoogle().catch(err => {
+                setIsLoggingIn(false);
+                console.log(err);
+            });
+        };
+    };
 
     return (
         <section>
@@ -49,7 +69,7 @@ const LoginPage = ({ loginUser }) => {
                             <p className="text-slate-6s00">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
-                            <TextField fullWidth error={Boolean(errors.email)} size="small" label="Email" variant="outlined" autoComplete="email" {...register("username", { required: true })} />
+                            <TextField fullWidth error={Boolean(errors.email)} size="small" label="Email" variant="outlined" autoComplete="email" {...register("email", { required: true })} />
 
                             <FormControl fullWidth variant="outlined" size='small'>
                                 <InputLabel htmlFor="password">Password</InputLabel>
@@ -91,7 +111,7 @@ const LoginPage = ({ loginUser }) => {
                             className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline"
                             type="submit"
                         >
-                            Sign Up
+                            Sign In
                         </button>
                     </form>
                 </div>

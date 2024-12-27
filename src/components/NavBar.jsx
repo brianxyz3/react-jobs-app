@@ -4,23 +4,21 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import ConfirmPopup from "./ConfirmPopup";
+import { doLogOut } from "../../controllers/auth";
+import { useAuth } from "../firebaseContext/authContext";
 
 const NavBar = () => {
     const [showPopup, setShowPopup] = useState(false);
+    const { currentUser } = useAuth();
     const navigate = useNavigate();
-    useEffect(() => {
-        if (!localStorage.token) {
-            localStorage.clear();
-        }
-    }, []);
+
 
 
     const togglePopup = () => { setShowPopup(prevState => !prevState) }
-    const logout = () => {
-        localStorage.clear();
+    const logOut = () => {
+        doLogOut();
         togglePopup();
-        navigate(0)
-        toast.success("Logout Successfully, Goodbye");
+        toast.success("Logout Successful, Goodbye");
     }
     const cancel = () => {
         togglePopup();
@@ -35,7 +33,7 @@ const NavBar = () => {
     }
     return (
         <nav className="bg-indigo-700 border-b border-indigo-500">
-            {showPopup && <ConfirmPopup onConfirm={logout} onCancel={cancel} text="Logout" />}
+            {showPopup && <ConfirmPopup onConfirmLogOut={logOut} onCancelLogOut={cancel} text="Logout" />}
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     <div
@@ -62,7 +60,7 @@ const NavBar = () => {
                                     to="/jobs"
                                     className={checkActive}
                                 >Jobs</NavLink>
-                                {localStorage.token ?
+                                {currentUser ?
                                     <><NavLink
                                     to="/add-job"
                                     className={checkActive}

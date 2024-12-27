@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
+import { useAuth } from "../firebaseContext/authContext";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,6 +53,8 @@ const AddJobPage = ({ addJob }) => {
         formState: { errors },
     } = useForm({ mode: "onChange" });
 
+    const { currentUser } = useAuth();
+
 
     const errorStyle = { color: "red" };
 
@@ -77,13 +80,15 @@ const AddJobPage = ({ addJob }) => {
     }
 
     const submitAddForm = async (data) => {
-        if (localStorage.token) {
-            const newJob = { ...data, id: uuid(), token: localStorage.token, author: localStorage.userId };
+        if (currentUser) {
+            const newJob = { ...data, id: uuid(), author: localStorage.userId };
             const newJobData = await addJob(newJob);
             toast.success("Job listing successfully added");
             return navigate(`/jobs/${newJobData._id}`);
         } else {
-            navigate("/login");
+            setTimeout(() => {
+                navigate("/login");
+            }, 3000);
             toast.error("Login To Add New Job Listing")
         }
     }

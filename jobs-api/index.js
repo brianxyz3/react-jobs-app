@@ -6,9 +6,6 @@ if (process.env.NODE_ENV !== "production") {
 import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
-import passport from "passport";
-import localStrategy from "passport-local";
-import jwt from "jsonwebtoken";
 import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
@@ -45,56 +42,25 @@ app.use(session(sessionConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new localStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 app.post(
   "/register",
-  catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res) => {
     try {
-      const {
-        username,
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-      } = req.body;
+      const { firstName, lastName, email, password, confirmPassword } =
+        req.body;
       if (validator.equals(password, confirmPassword)) {
-        const user = new User({ username, email, firstName, lastName });
-        const registeredUser = await User.register(user, password);
-        if (!registeredUser) {
-          throw new ExpressError(500, "Something Went Wrong");
-        }
-        req.login(registeredUser, (err) => {
-          if (err) return next(err);
-          const token = jwt.sign({ id: registeredUser._id }, "userToken", {
-            expiresIn: "1h",
-          });
-          res.status(200).json({ token, id: registeredUser._id });
-        });
+        const oldUser = await User.findOne({ email });
+        if (oldUser) return res.status(200).json(null);
+        const newUser = new User({ email, firstName, lastName });
+        const registeredUser = await newUser.save();
+        if (!registeredUser)
+          throw new ExpressError(500, "Something Went Wrong Registering User");
+        res.status(200).json({ id: registeredUser._id });
       }
     } catch (err) {
-      console.log("Backend err " + err);
+      console.log("Backend error " + err);
     }
-  })
-);
-
-app.post(
-  "/login",
-  passport.authenticate("local"),
-  catchAsync(async (req, res) => {
-    console.log("GOT HERE");
-    const { username } = req.body;
-    const user = await User.findByUsername(username);
-    console.log(user);
-    const token = jwt.sign({ id: user._id }, "userToken", {
-      expiresIn: "1h",
-    });
-    res.status(200).json({ token, id: user._id });
   })
 );
 
@@ -109,7 +75,7 @@ app.get(
 app.post(
   "/jobs",
   sanitizeJob,
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
     const newJob = new Job(req.body);

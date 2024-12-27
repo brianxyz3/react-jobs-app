@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import passportLocalMongoose from "passport-local-mongoose";
 import Job from "./job.js";
 const Schema = mongoose.Schema;
 
@@ -24,6 +23,5 @@ const UserSchema = new Schema({
     },
   ],
 });
-UserSchema.plugin(passportLocalMongoose);
 
 export default mongoose.model("User", UserSchema);

@@ -12,8 +12,11 @@ import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase.config";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { auth, db } from "../../firebase.config";
+// import { collection, addDoc } from "firebase/firestore";
+import { signUpWithEmailAndPassword } from "../../controllers/auth";
+import { useAuth } from "../firebaseContext/authContext";
 
 const SignUpPage = ({ registerUser }) => {
     const navigate = useNavigate();
@@ -24,6 +27,8 @@ const SignUpPage = ({ registerUser }) => {
     } = useForm();
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isSigningUp, setIsSigningUp] = useState(false);
+    const { userLoggedIn } = useAuth();
 
     const errorStyle = { color: "red" }
 
@@ -56,33 +61,31 @@ const SignUpPage = ({ registerUser }) => {
 
     const handleRegister = async (data) => {
         try {
-            if (data.password === data.confirmPassword) {
-                const { email, password } = data;
-                // await registerUser(user);
-                await createUserWithEmailAndPassword(auth, email, password);
-                const user = auth.currentUser;
-                console.log(user)
-                // localStorage.setItem("userId", newUser.id);
-                if (user) {
-                // localStorage.setItem("userId", newUser.id);
-                // navigate("/jobs");
-                    toast.success("User Successfully Registered");
-                }
+            const { email, password, confirmPassword } = data;
+            if (!isSigningUp && password === confirmPassword) {
+                setIsSigningUp(true);
+                const newUser = await registerUser(data);
+                // if (newUser) await addDoc(collection(db, "users"), { userId: newUser.id, userEmail: email });
+                await signUpWithEmailAndPassword(email, password);
+                setTimeout(() => {
+                    navigate("/jobs");
+                }, 3000);
+                toast.success("User Successfully Registered, Welcome!");
             } else {
                 toast.error("Password does not match");
-                return navigate("/register");
+                navigate("/register");
             }
         } catch (err) {
+            setIsSigningUp(false);
             const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
             toast.error(errorMsg);
-            // console.log(errorMsg)
+            navigate("/register");
         }
-
-
     }
 
     return (
         <section>
+            {userLoggedIn && navigate("/")}
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
                 <div className="w-10/12 md:w-5/12 p-12">
                     <form onSubmit={handleSubmit(handleRegister)} >
