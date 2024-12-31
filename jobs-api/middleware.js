@@ -4,6 +4,8 @@ import Job from "./model/job.js";
 
 const sanitizeJob = (req, res, next) => {
   try {
+    console.log("Got into sanitize middleware");
+
     const job = req.body;
     job.title = validator.escape(req.body.title);
     job.description = validator.escape(req.body.description);
@@ -19,17 +21,24 @@ const sanitizeJob = (req, res, next) => {
 };
 
 const isLoggedIn = (req, res, next) => {
-  if (req.body.token) {
+  console.log("got into authentication middleware");
+
+  const currentUser = req.headers.cookie;
+
+  if (currentUser.includes("userId")) {
+    console.log("got passed middleware");
     return next();
   }
   throw new ExpressError(401, "Unknown User, Please Login");
 };
 
 const isAuthor = async (req, res, next) => {
+  console.log("got into authorization middleware");
+
   const { id } = req.params;
-  const { userId } = req.body;
+  const currentUser = req.headers.cookie;
   const job = await Job.findById(id);
-  if (job.author.equals(userId)) return next();
+  if (currentUser.includes(job.postedBy)) return next();
   return res.json("Unauthorized User");
 };
 
