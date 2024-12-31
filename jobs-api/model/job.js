@@ -47,6 +47,10 @@ const JobSchema = new Schema({
     },
     phone: String,
   },
+  postedBy: {
+    type: String,
+    required: true,
+  },
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",

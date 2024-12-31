@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Job from "./job.js";
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -13,6 +12,10 @@ const UserSchema = new Schema({
     required: true,
   },
   lastName: {
+    type: String,
+    required: true,
+  },
+  userId: {
     type: String,
     required: true,
   },
