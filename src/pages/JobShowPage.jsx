@@ -1,18 +1,21 @@
 import { useLoaderData, Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete"
 import JobInfo from "../components/JobInfo";
 import ConfirmPopup from "../components/ConfirmPopup";
 import CompanyInfo from "../components/CompanyInfo";
 import Footer from "../components/Footer";
+import { useAuth } from "../firebaseContext/authContext";
 
 
 const JobShowPage = ({ deleteJob }) => {
     const job = useLoaderData();
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
+    const { currentUser } = useAuth();
+
 
     const handleDeleteClick = () => {
         setShowPopup(prevState => !prevState);
@@ -52,7 +55,7 @@ const JobShowPage = ({ deleteJob }) => {
                         <aside>
                             <CompanyInfo company={job.company} contact={job.contact} />
                             {/* Edit Job */}
-                            {localStorage.userId === job.author && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                            {currentUser.uid === job.postedBy && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                                 <Link
                                     to={`/edit-job/${job._id}`}

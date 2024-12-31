@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { TextField } from '@mui/material';
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useAuth } from "../firebaseContext/authContext";
 
@@ -81,8 +81,9 @@ const AddJobPage = ({ addJob }) => {
 
     const submitAddForm = async (data) => {
         if (currentUser) {
-            const newJob = { ...data, id: uuid(), author: localStorage.userId };
+            const newJob = { ...data, id: uuid(), postedBy: currentUser.uid };
             const newJobData = await addJob(newJob);
+            console.log(newJobData);
             toast.success("Job listing successfully added");
             return navigate(`/jobs/${newJobData._id}`);
         } else {
@@ -181,8 +182,8 @@ const AddJobPage = ({ addJob }) => {
                             </FormControl>
                         </div>
 
-                        <div className='mb-4'>
-                            <label className='block text-gray-700 font-bold mb-2'>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-bold mb-2">
                                 Location
                             </label>
                             <TextField

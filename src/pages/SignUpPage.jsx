@@ -30,6 +30,9 @@ const SignUpPage = ({ registerUser }) => {
     const [isSigningUp, setIsSigningUp] = useState(false);
     const { userLoggedIn } = useAuth();
 
+    const day = 24 * 60 * 60 * 1000;
+
+
     const errorStyle = { color: "red" }
 
     const validateForm = {
@@ -64,12 +67,17 @@ const SignUpPage = ({ registerUser }) => {
             const { email, password, confirmPassword } = data;
             if (!isSigningUp && password === confirmPassword) {
                 setIsSigningUp(true);
-                const newUser = await registerUser(data);
-                // if (newUser) await addDoc(collection(db, "users"), { userId: newUser.id, userEmail: email });
-                await signUpWithEmailAndPassword(email, password);
+                const newUser = await signUpWithEmailAndPassword(email, password);
+                const newUserId = newUser.user.uid
+                await registerUser({ ...data, userId: newUserId });
+                cookieStore.set({
+                    name: "userId",
+                    value: newUserId,
+                    expires: Date.now() + day,
+                });                // if (newUser) await addDoc(collection(db, "users"), { userId: newUser.id, userEmail: email });
                 setTimeout(() => {
                     navigate("/jobs");
-                }, 3000);
+                }, 2500);
                 toast.success("User Successfully Registered, Welcome!");
             } else {
                 toast.error("Password does not match");
@@ -108,18 +116,18 @@ const SignUpPage = ({ registerUser }) => {
                             {errors.email && <span style={errorStyle}>{validateForm.email.required}</span>}
 
 
-                            <FormControl margin="dense" fullWidth variant="outlined" size='small'>
+                            <FormControl margin="dense" fullWidth variant="outlined" size="small">
                                 <InputLabel htmlFor="password">Password</InputLabel>
                                 <OutlinedInput
                                     id="password"
                                     error={Boolean(errors.password)}
                                     autoComplete="current-password"
-                                    type={showPassword ? 'text' : 'password'}
+                                    type={showPassword ? "text" : "password"}
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton
                                                 aria-label={
-                                                    showPassword ? 'hide the password' : 'display the password'
+                                                    showPassword ? "hide the password" : "display the password"
                                                 }
                                                 onClick={handleClickShowPassword}
                                                 onMouseDown={handleEvtDefault}
@@ -145,7 +153,7 @@ const SignUpPage = ({ registerUser }) => {
                                 id="confirmPassword"
                                 label="Confirm Password"
                                 autoComplete="current-password"
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? "text" : "password"}
                                 {...register("confirmPassword", validateForm.confirmPassword)}
                             />
                             <div className="mb-5">

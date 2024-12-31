@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
@@ -15,8 +15,9 @@ const NavBar = () => {
 
 
     const togglePopup = () => { setShowPopup(prevState => !prevState) }
-    const logOut = () => {
+    const logOut = async () => {
         doLogOut();
+        await cookieStore.delete("userId");
         togglePopup();
         toast.success("Logout Successful, Goodbye");
     }
@@ -33,7 +34,7 @@ const NavBar = () => {
     }
     return (
         <nav className="bg-indigo-700 border-b border-indigo-500">
-            {showPopup && <ConfirmPopup onConfirmLogOut={logOut} onCancelLogOut={cancel} text="Logout" />}
+            {showPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     <div

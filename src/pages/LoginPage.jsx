@@ -9,7 +9,7 @@ import logo from "../assets/images/logo.png";
 import { logInWithEmailAndPassword, logInWithGoogle } from "../../controllers/auth";
 // import { useAuth } from "../firebaseContext/authContext";
 
-const LoginPage = () => {
+const LoginPage = ({ loginUser }) => {
     const {
         handleSubmit,
         register,
@@ -22,17 +22,27 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+    const day = 24 * 60 * 60 * 1000;
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleEvtDefault = (evt) => {
         evt.preventDefault();
     };
 
+
     const handleLogin = async (data) => {
         try {
             if (!isLoggingIn) {
                 setIsLoggingIn(true);
-                await logInWithEmailAndPassword(data.email, data.password);
+                const currentUser = await logInWithEmailAndPassword(data.email, data.password);
+                const currentUserId = currentUser.user.uid;
+                cookieStore.set({
+                    name: "userId",
+                    value: currentUserId,
+                    expires: Date.now() + day,
+                });
+                // const userLoginData = { ...data, userId: currentUserId };
+                // await loginUser(userLoginData);
                 toast.success("Welcome Back");
                 setTimeout(() => {
                     navigate("/jobs");
@@ -45,6 +55,29 @@ const LoginPage = () => {
             navigate("/login");
         }
     }
+    // const handleLogin = async (data) => {
+    //     try {
+    //         if (!isLoggingIn) {
+    //             setIsLoggingIn(true);
+    //             const currentUser = await logInWithEmailAndPassword(data.email, data.password);
+    //             console.log(currentUser.user.uid);
+    //             sessionStorage.setItem("userId", currentUser.user.uid);
+    //             cookieStore.set(currentUser.user.uid);
+    //             console.log(window.cookieStore.set())
+    //             console.log(window.sessionStorage);
+
+    //             toast.success("Welcome Back");
+    //             setTimeout(() => {
+    //                 navigate("/jobs");
+    //             }, 3000);
+    //         }
+    //     } catch (err) {
+    //         setIsLoggingIn(false);
+    //         const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
+    //         toast.error(errorMsg);
+    //         navigate("/login");
+    //     }
+    // }
 
 
     const handleGoogleLogIn = async () => {

@@ -47,13 +47,20 @@ app.post(
   "/register",
   catchAsync(async (req, res) => {
     try {
-      const { firstName, lastName, email, password, confirmPassword } =
+      const { firstName, lastName, email, userId, password, confirmPassword } =
         req.body;
       if (validator.equals(password, confirmPassword)) {
         const oldUser = await User.findOne({ email });
         if (oldUser) return res.status(200).json(null);
-        const newUser = new User({ email, firstName, lastName });
+        const newUser = new User({
+          email,
+          firstName,
+          lastName,
+          userId,
+        });
         const registeredUser = await newUser.save();
+        console.log(registeredUser);
+
         if (!registeredUser)
           throw new ExpressError(500, "Something Went Wrong Registering User");
         res.status(200).json({ id: registeredUser._id });
@@ -75,14 +82,20 @@ app.get(
 app.post(
   "/jobs",
   sanitizeJob,
-  // isLoggedIn,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
-    const newJob = new Job(req.body);
+    const currentUser = req.body.author;
+    const user = await User.find({ userId: currentUser });
+    const newJob = new Job({
+      ...req.body,
+      author: user[0]._id,
+      postedBy: currentUser,
+    });
     if (!newJob) throw ExpressError(400, "Invalid Job Data Input(s)");
     await newJob.save();
-    const user = await User.findById(newJob.author);
-    user.jobListings.push(newJob._id);
+
+    user[0].jobListings.push(newJob._id);
     res.status(201).json(newJob);
   })
 );
@@ -100,6 +113,7 @@ app.get(
 app.put(
   "/jobs/:id",
   sanitizeJob,
+  isLoggedIn,
   isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -111,6 +125,8 @@ app.put(
 
 app.delete(
   "/jobs/:id",
+  isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);

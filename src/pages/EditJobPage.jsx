@@ -8,6 +8,7 @@ import Select from '@mui/material/Select';
 import { TextField } from '@mui/material';
 import { toast } from "react-toastify";
 import validator from "validator";
+import { useAuth } from "../firebaseContext/authContext";
 
 
 const ITEM_HEIGHT = 48;
@@ -46,6 +47,7 @@ const EditJobPage = ({ updateJob }) => {
     const job = useLoaderData();
     const navigate = useNavigate();
     const { id } = useParams();
+    const { currentUser, userLoggedIn } = useAuth();
 
     const {
         register,
@@ -74,20 +76,21 @@ const EditJobPage = ({ updateJob }) => {
         },
         email: {
             required: "Company Contact email cannot be blank",
-        }
-    }
+        },
+    };
 
     const submitEditForm = async (data) => {
-        if (localStorage.token && localStorage.userId === job.author) {
-            const updatedJob = { ...data, token: localStorage.token, userId: localStorage.userId };
+        if (userLoggedIn && currentUser.uid === job.postedBy) {
+            const updatedJob = { ...data, postedBy: currentUser.uid };
             const res = await updateJob(updatedJob, id);
             if (res === "Unauthorized User") return toast.error(res);
             toast.success("Job listing successfully updated");
             return navigate(`/jobs/${id}`);
         } else {
             navigate("/login");
-        }
-    }
+        };
+    };
+
     const backToJob = () => {
         return navigate(`/jobs/${id}`)
     }
