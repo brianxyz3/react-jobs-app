@@ -10,7 +10,8 @@ export default {
         "70/30": "70% 28%",
       },
       backgroundImage: {
-        "signup-img": "url('./src/assets/images/registerpageImage.jpg')",
+        "signup-img": "url('./src/assets/images/registerImg.jpg')",
+        "login-img": "url('./src/assets/images/loginImg.jpg')",
       },
       backgroundPosition: {
         center: "center",
