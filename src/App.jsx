@@ -33,7 +33,7 @@ function App() {
         </Route>
 
         <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage loginUser={loginUser} />} />
+          <Route path="/login" element={<LoginPage loginUser={registerUser} />} />
           <Route path="/register" element={<SignUpPage registerUser={registerUser} />} />
         </Route>
 

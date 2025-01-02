@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, FormControlLabel, Checkbox } from "@mui/material";
 import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
 import { logInWithEmailAndPassword, logInWithGoogle } from "../../controllers/auth";
@@ -29,6 +29,13 @@ const LoginPage = ({ loginUser }) => {
         evt.preventDefault();
     };
 
+    const createUserCookie = (userId) => {
+        cookieStore.set({
+            name: "userId",
+            value: userId,
+            expires: Date.now() + day,
+        });
+    }
 
     const handleLogin = async (data) => {
         try {
@@ -36,57 +43,41 @@ const LoginPage = ({ loginUser }) => {
                 setIsLoggingIn(true);
                 const currentUser = await logInWithEmailAndPassword(data.email, data.password);
                 const currentUserId = currentUser.user.uid;
-                cookieStore.set({
-                    name: "userId",
-                    value: currentUserId,
-                    expires: Date.now() + day,
-                });
-                // const userLoginData = { ...data, userId: currentUserId };
-                // await loginUser(userLoginData);
+                createUserCookie(currentUserId);
                 toast.success("Welcome Back");
                 setTimeout(() => {
                     navigate("/jobs");
-                }, 3000);
+                }, 2000);
             }
         } catch (err) {
             setIsLoggingIn(false);
-            const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
-            toast.error(errorMsg);
+            const errorMsg = err.message.replace(/Firebase: /i, "")
+            toast.error(errorMsg + "Check Your Internet Connection");
             navigate("/login");
         }
     }
-    // const handleLogin = async (data) => {
-    //     try {
-    //         if (!isLoggingIn) {
-    //             setIsLoggingIn(true);
-    //             const currentUser = await logInWithEmailAndPassword(data.email, data.password);
-    //             console.log(currentUser.user.uid);
-    //             sessionStorage.setItem("userId", currentUser.user.uid);
-    //             cookieStore.set(currentUser.user.uid);
-    //             console.log(window.cookieStore.set())
-    //             console.log(window.sessionStorage);
 
-    //             toast.success("Welcome Back");
-    //             setTimeout(() => {
-    //                 navigate("/jobs");
-    //             }, 3000);
-    //         }
-    //     } catch (err) {
-    //         setIsLoggingIn(false);
-    //         const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
-    //         toast.error(errorMsg);
-    //         navigate("/login");
-    //     }
-    // }
 
 
     const handleGoogleLogIn = async () => {
         if (!isLoggingIn) {
+            try {
             setIsLoggingIn(true);
-            logInWithGoogle().catch(err => {
+                const currentUser = await logInWithGoogle();
+                const userId = currentUser.user.uid;
+                const googleData = currentUser.user.providerData[0]
+                const arr = googleData.displayName.split(" ");
+                const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
+                await loginUser(userData);
+                createUserCookie(userId);
+                setTimeout(() => {
+                    navigate("/jobs");
+                }, 2000);
+            } catch (err) {
                 setIsLoggingIn(false);
-                console.log(err);
-            });
+                const errorMsg = err.message.replace(/Firebase: /i, "")
+                toast.error(errorMsg + "Check Your Internet Connection");
+            };
         };
     };
 
@@ -133,11 +124,13 @@ const LoginPage = ({ loginUser }) => {
 
 
 
-                            <div className="flex justify-between mb-5">
+
+
+                            <div className="flex justify-between items-center mb-5">
                                 <div>
                                     <FormControlLabel control={<Checkbox />} label="Remember me" />
                                 </div>
-                                <a className="md:mt-2 text-indigo-400 hover:text-indigo-500" href="">Forgot Password?</a>
+                                <a className="text-indigo-400 hover:text-indigo-500" href="">Forgot Password?</a>
                             </div>
                         </div>
                         <button
@@ -147,8 +140,21 @@ const LoginPage = ({ loginUser }) => {
                             Sign In
                         </button>
                     </form>
+
+
+                    <div className="mt-10 border-t font-mono">
+                        <button className=" mt-3 flex items-center justify-center w-full"
+                            onClick={handleGoogleLogIn}>
+                            <div className="mr-3">Sign In Using:-</div>
+                            <div className="flex items-end">
+                                <Google className="text-red-500" fontSize="large" />
+                                <span className="text-2xl text-yellow-500">oo<span className="text-green-600 font-bold">gl<span className="text-blue-500">e</span></span></span>
+                            </div>
+                        </button>
+                    </div>
+
                 </div>
-                <div className="bg-signup-img bg-center bg-cover rounded-r-lg md:w-6/12"></div>
+                <div className="bg-login-img bg-center bg-cover rounded-r-lg md:w-6/12"></div>
             </div>
         </section>
     )

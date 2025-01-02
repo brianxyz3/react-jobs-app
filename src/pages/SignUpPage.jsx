@@ -1,20 +1,12 @@
 import { useState } from "react";
-import { TextField, FormControlLabel, Checkbox } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
+import { TextField, FormControlLabel, Checkbox, IconButton, OutlinedInput, InputLabel, InputAdornment } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Google, VisibilityOff, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
-// import { auth, db } from "../../firebase.config";
-// import { collection, addDoc } from "firebase/firestore";
 import { signUpWithEmailAndPassword } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
 
@@ -74,10 +66,10 @@ const SignUpPage = ({ registerUser }) => {
                     name: "userId",
                     value: newUserId,
                     expires: Date.now() + day,
-                });                // if (newUser) await addDoc(collection(db, "users"), { userId: newUser.id, userEmail: email });
+                });                
                 setTimeout(() => {
                     navigate("/jobs");
-                }, 2500);
+                }, 2000);
                 toast.success("User Successfully Registered, Welcome!");
             } else {
                 toast.error("Password does not match");
@@ -90,6 +82,28 @@ const SignUpPage = ({ registerUser }) => {
             navigate("/register");
         }
     }
+
+    const handleGoogleLogIn = async () => {
+        if (!isSigningUp) {
+            try {
+                setIsSigningUp(true);
+                const currentUser = await logInWithGoogle();
+                const userId = currentUser.user.uid;
+                const googleData = currentUser.user.providerData[0]
+                const arr = googleData.displayName.split(" ");
+                const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
+                await registerUser(userData);
+                createUserCookie(userId);
+                setTimeout(() => {
+                    navigate("/jobs");
+                }, 2000);
+            } catch (err) {
+                setIsSigningUp(false);
+                const errorMsg = err.message.replace(/Firebase: /i, "")
+                toast.error(errorMsg + "Check Your Internet Connection");
+            };
+        };
+    };
 
     return (
         <section>
@@ -167,6 +181,17 @@ const SignUpPage = ({ registerUser }) => {
                             Sign Up
                         </button>
                     </form>
+
+                    <div className="mt-10 border-t font-mono">
+                        <button className=" mt-3 flex items-center justify-center w-full"
+                            onClick={handleGoogleLogIn}>
+                            <div className="mr-3">Sign Up Using:-</div>
+                            <div className="flex items-end">
+                                <Google className="text-red-500" fontSize="large" />
+                                <span className="text-2xl text-yellow-500">oo<span className="text-green-600 font-bold">gl<span className="text-blue-500">e</span></span></span>
+                            </div>
+                        </button>
+                    </div>
                 </div>
                 <div className="bg-signup-img bg-center bg-cover rounded-r-lg md:w-6/12"></div>
             </div>
