@@ -47,9 +47,8 @@ app.post(
   "/register",
   catchAsync(async (req, res) => {
     try {
-      const { firstName, lastName, email, userId, password, confirmPassword } =
-        req.body;
-      if (validator.equals(password, confirmPassword)) {
+      const { firstName, lastName, email, userId } = req.body;
+      if (email) {
         const oldUser = await User.findOne({ email });
         if (oldUser) return res.status(200).json(null);
         const newUser = new User({
