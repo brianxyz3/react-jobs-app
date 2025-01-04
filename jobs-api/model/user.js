@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Job from "./job.js";
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -25,6 +26,16 @@ const UserSchema = new Schema({
       ref: "Job",
     },
   ],
+});
+
+UserSchema.post("findOneAndDelete", async (user) => {
+  if (user) {
+    await Job.deleteMany({
+      _id: {
+        $in: user.jobListing,
+      },
+    });
+  }
 });
 
 export default mongoose.model("User", UserSchema);

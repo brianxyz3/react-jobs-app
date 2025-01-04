@@ -24,7 +24,6 @@ const isLoggedIn = (req, res, next) => {
   console.log("got into authentication middleware");
 
   const currentUser = req.headers.cookie;
-
   if (currentUser.includes("userId")) {
     console.log("got passed middleware");
     return next();

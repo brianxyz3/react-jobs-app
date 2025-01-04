@@ -70,6 +70,12 @@ app.post(
   })
 );
 
+app.delete("/delete-user", isLoggedIn, async (req, res) => {
+  const { userId } = req.body;
+  await User.findOneAndDelete({ userId });
+  res.status(200).json();
+});
+
 app.get(
   "/jobs",
   catchAsync(async (req, res) => {
