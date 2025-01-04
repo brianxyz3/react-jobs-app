@@ -1,4 +1,4 @@
-const registerUser = async (newUser) => {
+const apiRegisterUser = async (newUser) => {
   try {
     const res = await fetch("/api/register", {
       method: "POST",
@@ -10,11 +10,11 @@ const registerUser = async (newUser) => {
     const data = await res.json();
     return data;
   } catch (err) {
-    return err;
+    return err.message;
   }
 };
 
-const loginUser = async (user) => {
+const apiLoginUser = async (user) => {
   try {
     const res = await fetch("/api/login", {
       method: "POST",
@@ -26,8 +26,23 @@ const loginUser = async (user) => {
     const data = await res.json();
     return data;
   } catch (err) {
-    return err;
+    return err.message;
   }
 };
 
-export { registerUser, loginUser };
+const apiDeleteUser = async (userId) => {
+  try {
+    const res = await fetch("/api/delete-user", {
+      method: "Delete",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(userId),
+    });
+    return;
+  } catch (err) {
+    return err.message;
+  }
+};
+
+export { apiRegisterUser, apiLoginUser, apiDeleteUser };
