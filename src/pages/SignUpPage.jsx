@@ -9,8 +9,9 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { signUpWithEmailAndPassword } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
+import { apiRegisterUser } from "../../controllers/user";
 
-const SignUpPage = ({ registerUser }) => {
+const SignUpPage = () => {
     const navigate = useNavigate();
     const {
         register,
@@ -61,7 +62,7 @@ const SignUpPage = ({ registerUser }) => {
                 setIsSigningUp(true);
                 const newUser = await signUpWithEmailAndPassword(email, password);
                 const newUserId = newUser.user.uid
-                await registerUser({ ...data, userId: newUserId });
+                await apiRegisterUser({ ...data, userId: newUserId });
                 cookieStore.set({
                     name: "userId",
                     value: newUserId,
@@ -92,7 +93,7 @@ const SignUpPage = ({ registerUser }) => {
                 const googleData = currentUser.user.providerData[0]
                 const arr = googleData.displayName.split(" ");
                 const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
-                await registerUser(userData);
+                await apiRegisterUser(userData);
                 createUserCookie(userId);
                 setTimeout(() => {
                     navigate("/jobs");
@@ -171,7 +172,7 @@ const SignUpPage = ({ registerUser }) => {
                                 {...register("confirmPassword", validateForm.confirmPassword)}
                             />
                             <div className="mb-5">
-                                <FormControlLabel required control={<Checkbox />} label="Terms and Conditions" />
+                                <FormControlLabel className="hover:text-gray-600" required control={<Checkbox />} label="Terms and Conditions" />
                             </div>
                         </div>
                         <button
@@ -183,7 +184,7 @@ const SignUpPage = ({ registerUser }) => {
                     </form>
 
                     <div className="mt-10 border-t font-mono">
-                        <button className=" mt-3 flex items-center justify-center w-full"
+                        <button className="mt-3 flex items-center justify-center w-full hover:text-gray-600"
                             onClick={handleGoogleLogIn}>
                             <div className="mr-3">Sign Up Using:-</div>
                             <div className="flex items-end">

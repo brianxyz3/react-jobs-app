@@ -1,6 +1,6 @@
 const ConfirmPopup = ({ id, onConfirm, onCancel, text }) => {
     return (
-        <div style={{ background: "rgba(0,0,0,0.8)" }} className="text-center blur-none fixed inset-0 flex justify-center items-center p-3">
+        <div style={{ background: "rgba(0,0,0,0.8)", zIndex: "10" }} className="text-center blur-none fixed inset-0 flex justify-center items-center p-3">
             <div className="bg-indigo-500 p-10 rounded-md">
                 <h3 className="font-bold text-xl mb-2">Are You Sure You Want To {text}?</h3>
                 <button onClick={() => onConfirm(id)}

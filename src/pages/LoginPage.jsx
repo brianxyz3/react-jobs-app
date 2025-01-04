@@ -6,10 +6,12 @@ import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } fr
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
-import { logInWithEmailAndPassword, logInWithGoogle } from "../../controllers/auth";
+import { logInWithEmailAndPassword, logInWithGoogle, resetPassword } from "../../controllers/auth";
 // import { useAuth } from "../firebaseContext/authContext";
+import { apiRegisterUser } from "../../controllers/user";
+import AuthPopUp from "../components/AuthPopUp";
 
-const LoginPage = ({ loginUser }) => {
+const LoginPage = () => {
     const {
         handleSubmit,
         register,
@@ -21,6 +23,7 @@ const LoginPage = ({ loginUser }) => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [showResetPopup, setShowResetPopUp] = useState(false);
 
     const day = 24 * 60 * 60 * 1000;
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -68,7 +71,8 @@ const LoginPage = ({ loginUser }) => {
                 const googleData = currentUser.user.providerData[0]
                 const arr = googleData.displayName.split(" ");
                 const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
-                await loginUser(userData);
+                await apiRegisterUser(userData);
+                toast.success("Welcome Back");
                 createUserCookie(userId);
                 setTimeout(() => {
                     navigate("/jobs");
@@ -81,8 +85,25 @@ const LoginPage = ({ loginUser }) => {
         };
     };
 
+    const handleResetPassword = (data) => {
+        const formData = { ...data };
+        const userEmail = formData.email;
+        resetPassword(userEmail);
+    }
+
+    const cancel = (evt) => {
+        evt.preventDefault();
+        toggleResetPopUp();
+        toast.error("Cancelled Password Reset");
+    };
+
+    const toggleResetPopUp = () => {
+        setShowResetPopUp(prevState => !prevState);
+    };
+
     return (
         <section>
+            {showResetPopup && < AuthPopUp onConfirm={handleResetPassword} onCancel={cancel} text="Enter Your Email Address" email={true} />}
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
                 <div className="w-10/12 md:w-5/12 p-12">
                     <form onSubmit={handleSubmit(handleLogin)}>
@@ -128,9 +149,11 @@ const LoginPage = ({ loginUser }) => {
 
                             <div className="flex justify-between items-center mb-5">
                                 <div>
-                                    <FormControlLabel control={<Checkbox />} label="Remember me" />
+                                    <FormControlLabel control={<Checkbox />} className="hover:text-gray-600" label="Remember me" />
                                 </div>
-                                <a className="text-indigo-400 hover:text-indigo-500" href="">Forgot Password?</a>
+                                <button
+                                    onClick={toggleResetPopUp}
+                                    className="text-indigo-400 hover:text-indigo-500" >Forgot Password?</button>
                             </div>
                         </div>
                         <button
@@ -143,7 +166,7 @@ const LoginPage = ({ loginUser }) => {
 
 
                     <div className="mt-10 border-t font-mono">
-                        <button className=" mt-3 flex items-center justify-center w-full"
+                        <button className=" mt-3 flex items-center justify-center w-full hover:text-gray-600"
                             onClick={handleGoogleLogIn}>
                             <div className="mr-3">Sign In Using:-</div>
                             <div className="flex items-end">

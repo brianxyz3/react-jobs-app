@@ -1,18 +1,25 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import ConfirmPopup from "./ConfirmPopup";
 import { doLogOut } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
+import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+import { auth } from "../../firebase.config";
+import { apiDeleteUser } from "../../controllers/user";
+
+import AuthPopUp from "./AuthPopUp";
+// import { AuthCredential } from "firebase/auth";
 
 const NavBar = () => {
     const [showLogOutPopup, setShowLogOutPopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [isDeletingUser, setIsDeletingUser] = useState(false);
 
+
+    const user = auth.currentUser;
     const { currentUser } = useAuth();
-    // const navigate = useNavigate();
 
 
 
@@ -28,23 +35,43 @@ const NavBar = () => {
         toast.success("Logout Successful, Goodbye");
     }
 
-    const deleteUser = async () => {
-        console.log("in delete func");
+    const doDeleteUser = async (data) => {
+        try {
+            if (!isDeletingUser) {
+                setIsDeletingUser(true);
+                const userId = user.uid;
+                const userInput = { ...data };
+                const credential = EmailAuthProvider.credential(
+                    user.email,
+                    userInput.password,
+                );
 
+                await reauthenticateWithCredential(user, credential);
+                await deleteUser(user);
+                await apiDeleteUser({ userId });
+                await cookieStore.delete("userId");
+
+                toast.success("User Profile Deleted Successfully");
+            }
+        } catch (err) {
+            setIsDeletingUser(false);
+            toast.error(err.message + "Something Went wrong, Try Again");
+            console.log(err);
+        };
         toggleDeletePopup();
     }
 
     const cancel = () => {
         if (showLogOutPopup) {
-            setShowLogOutPopup(false);
+            toggleLogOutPopup();
             toast.error("Cancelled Logout");
         }
         if (showDeletePopup) {
-            setShowDeletePopup(false);
-
+            toggleDeletePopup();
             toast.error("Cancelled User Profile Delete");
-        }
-    }
+        };
+    };
+
     const checkActive = ({ isActive }) => {
         if (isActive) {
             return "bg-black text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
@@ -58,7 +85,7 @@ const NavBar = () => {
     return (
         <nav className="bg-indigo-700 border-b border-indigo-500">
             {showLogOutPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
-            {showDeletePopup && <ConfirmPopup onConfirm={deleteUser} onCancel={cancel} text="Delete User Profile" />}
+            {showDeletePopup && <AuthPopUp onConfirm={doDeleteUser} onCancel={cancel} text="Enter Your Password" password={true} />}
 
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">

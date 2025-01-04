@@ -13,7 +13,6 @@ import AddJobPage from "./pages/AddJobPage";
 import EditJobPage from "./pages/EditJobPage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import { registerUser, loginUser } from "../controllers/user";
 import { addJobSubmit, updateJobSubmit, deleteJob } from "../controllers/job";
 import AuthLayout from "./layouts/AuthLayout";
 
@@ -33,8 +32,8 @@ function App() {
         </Route>
 
         <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage loginUser={registerUser} />} />
-          <Route path="/register" element={<SignUpPage registerUser={registerUser} />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignUpPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
