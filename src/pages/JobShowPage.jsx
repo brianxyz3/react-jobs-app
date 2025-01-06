@@ -55,7 +55,7 @@ const JobShowPage = ({ deleteJob }) => {
                         <aside>
                             <CompanyInfo company={job.company} contact={job.contact} />
                             {/* Edit Job */}
-                            {currentUser.uid === job.postedBy && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                            {currentUser && currentUser.uid === job.postedBy && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                                 <Link
                                     to={`/edit-job/${job._id}`}
