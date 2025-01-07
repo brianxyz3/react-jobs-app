@@ -32,7 +32,7 @@ UserSchema.post("findOneAndDelete", async (user) => {
   if (user) {
     await Job.deleteMany({
       _id: {
-        $in: user.jobListing,
+        $in: user.jobListings,
       },
     });
   }
