@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
@@ -17,7 +17,7 @@ const NavBar = () => {
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isDeletingUser, setIsDeletingUser] = useState(false);
 
-
+    const navigate = useNavigate();
     const user = auth.currentUser;
     const { currentUser } = useAuth();
 
@@ -45,17 +45,19 @@ const NavBar = () => {
                     user.email,
                     userInput.password,
                 );
-
                 await reauthenticateWithCredential(user, credential);
                 await deleteUser(user);
                 await apiDeleteUser({ userId });
                 await cookieStore.delete("userId");
 
                 toast.success("User Profile Deleted Successfully");
-            }
+                setTimeout(() => {
+                    navigate("/");
+                }, 2000);
+            };
         } catch (err) {
             setIsDeletingUser(false);
-            toast.error(err.message + "Something Went wrong, Try Again");
+            toast.error(err.message + ". Something Went wrong, Try Again");
             console.log(err);
         };
         toggleDeletePopup();
