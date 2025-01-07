@@ -11,7 +11,6 @@ import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
 import { sanitizeJob, isLoggedIn, isAuthor } from "./middleware.js";
-import validator from "validator";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
@@ -90,17 +89,21 @@ app.post(
   isLoggedIn,
   catchAsync(async (req, res) => {
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
-    const currentUser = req.body.author;
+    const currentUser = req.body.postedBy;
+
     const user = await User.find({ userId: currentUser });
+    console.log(req.body);
+
     const newJob = new Job({
       ...req.body,
       author: user[0]._id,
-      postedBy: currentUser,
     });
-    if (!newJob) throw ExpressError(400, "Invalid Job Data Input(s)");
-    await newJob.save();
 
+    if (!newJob) throw ExpressError(400, "Invalid Job Data Input(s)");
+
+    await newJob.save().catch((e) => console.log(e));
     user[0].jobListings.push(newJob._id);
+    await user[0].save();
     res.status(201).json(newJob);
   })
 );
@@ -135,6 +138,10 @@ app.delete(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
+    const updateUser = await User.findByIdAndUpdate(deletedJob.author, {
+      $pull: { jobListings: deletedJob._id },
+    });
+
     if (!deletedJob) throw new ExpressError(404, "Job Not Found");
     res.status(200).json({ message: "Job deleted successfully" });
   })
