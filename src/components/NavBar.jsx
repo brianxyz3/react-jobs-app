@@ -8,8 +8,8 @@ import { useAuth } from "../firebaseContext/authContext";
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { auth } from "../../firebase.config";
 import { apiDeleteUser } from "../../controllers/user";
-
 import AuthPopUp from "./AuthPopUp";
+
 // import { AuthCredential } from "firebase/auth";
 
 const NavBar = () => {
@@ -25,6 +25,7 @@ const NavBar = () => {
 
     const toggleLogOutPopup = () => { setShowLogOutPopup(prevState => !prevState) };
     const toggleDeletePopup = () => { setShowDeletePopup(prevState => !prevState) };
+
 
 
 
@@ -85,7 +86,7 @@ const NavBar = () => {
 
 
     return (
-        <nav className="bg-indigo-700 border-b border-indigo-500">
+        <nav className="bg-indigo-700 border-b border-indigo-500 text-nowrap">
             {showLogOutPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
             {showDeletePopup && <AuthPopUp onConfirm={doDeleteUser} onCancel={cancel} text="Enter Your Password" password={true} />}
 
@@ -106,7 +107,7 @@ const NavBar = () => {
                         </NavLink>
                         {/* Nav Link Items */}
                         <div className="md:ml-auto">
-                            <div className="flex space-x-2">
+                            <div className="flex s pace-x-2">
                                 <NavLink
                                     to="/"
                                     className={checkActive}
@@ -115,7 +116,7 @@ const NavBar = () => {
                                     to="/jobs"
                                     className={checkActive}
                                 >Jobs</NavLink>
-                                {currentUser ?
+                                {!currentUser ?
                                     <><NavLink
                                     to="/add-job"
                                     className={checkActive}
