@@ -105,7 +105,7 @@ const LoginPage = () => {
         <section>
             {showResetPopup && < AuthPopUp onConfirm={handleResetPassword} onCancel={cancel} text="Enter Your Email Address" email={true} />}
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
-                <div className="w-10/12 md:w-5/12 p-12">
+                <div className="w-10/12 md:w-6/12 lg:w-5/12 p-3 md:p-10 lg:p-12">
                     <form onSubmit={handleSubmit(handleLogin)}>
                         <div className="mb-9">
                             <img className="h-12 w-auto mb-4"

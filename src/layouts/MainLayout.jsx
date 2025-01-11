@@ -14,15 +14,15 @@ const MainLayout = () => {
     };
 
     return (
-        <container className="flex">
+        <section className="flex">
             <SideBar showSideBar={showSideBar} toggleSideBar={toggleSideBar} />
-            <main>
+            <main className="w-svw overflow-x-hidden">
                 <NavBar />
             <Outlet />
             <Footer />
             <ToastContainer />
             </main>
-        </container>
+        </section>
     )
 }
 

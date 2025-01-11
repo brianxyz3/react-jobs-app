@@ -96,7 +96,7 @@ const NavBar = () => {
                         className="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
                     >
                         {/*  Logo  */}
-                        <NavLink className="flex flex-shrink-0 items-center mr-4" to="/">
+                        <NavLink className="flex flex-shrink-0 items-center sm:mr-4 mr-2" to="/">
                             <img
                                 className="h-10 w-auto"
                                 src={logo}
@@ -107,7 +107,7 @@ const NavBar = () => {
                         </NavLink>
                         {/* Nav Link Items */}
                         <div className="md:ml-auto">
-                            <div className="flex s pace-x-2">
+                            <div className="flex sm:space-x-2 space-x-1">
                                 <NavLink
                                     to="/"
                                     className={checkActive}
@@ -116,16 +116,12 @@ const NavBar = () => {
                                     to="/jobs"
                                     className={checkActive}
                                 >Jobs</NavLink>
-                                {!currentUser ?
+                                {currentUser ?
                                     <><NavLink
                                     to="/add-job"
                                     className={checkActive}
                                     >Add Job</NavLink>
-                                        <NavLink
-                                            className={`text-white hover:bg-red-700 hover:text-white rounded-md px-3 py-2 ${showLogOutPopup && "bg-red-900"}`}
-                                            onClick={toggleLogOutPopup}>
-                                            Logout
-                                        </NavLink>
+
                                         <NavLink
                                             className={`text-white hover:bg-red-700 hover:text-white rounded-md px-3 py-2 ${showDeletePopup && "bg-red-900"}`}
                                             onClick={toggleDeletePopup}

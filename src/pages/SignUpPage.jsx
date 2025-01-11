@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { signUpWithEmailAndPassword } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
 import { apiRegisterUser } from "../../controllers/user";
+import { logInWithGoogle } from "../../controllers/auth";
 
 const SignUpPage = () => {
     const navigate = useNavigate();
@@ -88,7 +89,8 @@ const SignUpPage = () => {
         if (!isSigningUp) {
             try {
                 setIsSigningUp(true);
-                const currentUser = await logInWithGoogle();
+                const currentUser = await logInWithGoogle()
+                    .catch((err) => (console.log(err)))
                 const userId = currentUser.user.uid;
                 const googleData = currentUser.user.providerData[0]
                 const arr = googleData.displayName.split(" ");
@@ -110,7 +112,7 @@ const SignUpPage = () => {
         <section>
             {userLoggedIn && navigate("/")}
             <div className="flex justify-center md:justify-end border rounded-lg m-7">
-                <div className="w-10/12 md:w-5/12 p-12">
+                <div className="w-10/12 md:w-6/12 lg:w-5/12 p-3 md:p-10 lg:p-12">
                     <form onSubmit={handleSubmit(handleRegister)} >
                         <div className="mb-9 ">
                             <img className="h-12 w-auto mb-4"
