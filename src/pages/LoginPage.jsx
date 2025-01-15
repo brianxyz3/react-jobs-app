@@ -40,7 +40,7 @@ const LoginPage = () => {
         });
     }
 
-    const handleLogin = async (data) => {
+    const handleLogin = async (data, evt) => {
         try {
             if (!isLoggingIn) {
                 setIsLoggingIn(true);
@@ -110,7 +110,7 @@ const LoginPage = () => {
                         <div className="mb-9">
                             <img className="h-12 w-auto mb-4"
                                 src={logo} alt="react logo" />
-                            <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign in to your account</h3>
+                            <h3 className="font-bold text-2xl text-slate-900 mb-2">Login in to your account</h3>
                             <p className="text-slate-6s00">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
@@ -147,23 +147,24 @@ const LoginPage = () => {
 
 
 
-                            <div className="flex justify-between items-center mb-5">
-                                <div>
-                                    <FormControlLabel control={<Checkbox />} className="hover:text-gray-600" label="Remember me" />
-                                </div>
-                                <button
-                                    onClick={toggleResetPopUp}
-                                    className="text-indigo-400 hover:text-indigo-500" >Forgot Password?</button>
-                            </div>
+
                         </div>
                         <button
-                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline"
+                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline mt-5"
                             type="submit"
                         >
                             Sign In
                         </button>
                     </form>
 
+                    <div className="flex justify-between items-center mt-5">
+                        <div>
+                            <FormControlLabel control={<Checkbox />} className="hover:text-gray-600" label="Remember me" />
+                        </div>
+                        <button
+                            onClick={toggleResetPopUp}
+                            className="text-indigo-400 hover:text-indigo-500" >Forgot Password?</button>
+                    </div>
 
                     <div className="mt-10 border-t font-mono">
                         <button className=" mt-3 flex items-center justify-center w-full hover:text-gray-600"

@@ -59,12 +59,12 @@ const AuthPopUp = ({ onCancel, onConfirm, text, email = false, password = false 
                         </div>
 
 
-                        <div className="flex gap-2">
+                        <div className="mx-auto flex justify-center w-5/6 gap-3">
                             <button
                                 type="submit"
-                                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full md:w-auto">Continue</button>
+                                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full md:w-1/2">Continue</button>
                             <button onClick={onCancel}
-                                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full md:w-auto">Cancel</button>
+                                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full md:w-1/2">Cancel</button>
                         </div>
                     </form>
                 </div>
