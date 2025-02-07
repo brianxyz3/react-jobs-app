@@ -10,7 +10,12 @@ import Job from "./model/job.js";
 import User from "./model/user.js";
 import ExpressError from "./utilities/ExpressError.js";
 import catchAsync from "./utilities/catchAsync.js";
-import { sanitizeJob, isLoggedIn, isAuthor } from "./middleware.js";
+import {
+  sanitizeJob,
+  isLoggedIn,
+  isAuthor,
+  sanitizeUser,
+} from "./middleware.js";
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
@@ -41,6 +46,20 @@ app.use(session(sessionConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get(
+  "/user/:id",
+  catchAsync(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await User.find({ userId: id });
+      const userDetail = await user[0].populate("pendingJobApplications");
+      res.status(200).json(userDetail);
+    } catch (err) {
+      console.log(err);
+    }
+  })
+);
 
 app.post(
   "/register",
@@ -92,7 +111,6 @@ app.post(
     const currentUser = req.body.postedBy;
 
     const user = await User.find({ userId: currentUser });
-    console.log(req.body);
 
     const newJob = new Job({
       ...req.body,
@@ -119,6 +137,29 @@ app.get(
 );
 
 app.put(
+  "/job-apply/:id",
+  sanitizeUser,
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const currentUser = req.body.currentUser;
+    const user = await User.find({ userId: currentUser });
+    console.log(user);
+    const updatedJob = await Job.findById(id);
+    updatedJob.jobApplicants.push(user[0]._id);
+    console.log(updatedJob);
+    user[0].pendingJobApplications.push(updatedJob._id);
+    console.log(user);
+    await user[0].save().catch((err) => console.log(err));
+    await updatedJob.save().catch((err) => console.log(err));
+
+    console.log("In Job Apply");
+    if (!updatedJob) throw new ExpressError(404, "Job Not Found");
+    res.status(200).json();
+  })
+);
+
+app.put(
   "/jobs/:id",
   sanitizeJob,
   isLoggedIn,
@@ -138,11 +179,11 @@ app.delete(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
+    if (!deletedJob) throw new ExpressError(404, "Job Not Found");
     const updateUser = await User.findByIdAndUpdate(deletedJob.author, {
       $pull: { jobListings: deletedJob._id },
     });
 
-    if (!deletedJob) throw new ExpressError(404, "Job Not Found");
     res.status(200).json({ message: "Job deleted successfully" });
   })
 );

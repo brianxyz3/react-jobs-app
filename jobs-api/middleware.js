@@ -4,7 +4,7 @@ import Job from "./model/job.js";
 
 const sanitizeJob = (req, res, next) => {
   try {
-    console.log("Got into sanitize middleware");
+    console.log("Got into job sanitize middleware");
 
     const job = req.body;
     job.title = validator.escape(req.body.title);
@@ -14,6 +14,15 @@ const sanitizeJob = (req, res, next) => {
     job.company.description = validator.escape(req.body.company.description);
     job.contact.email = validator.normalizeEmail(req.body.contact.email);
     job.contact.phone = validator.escape(req.body.contact.phone);
+    next();
+  } catch (err) {
+    throw new ExpressError(400, err);
+  }
+};
+
+const sanitizeUser = (req, res, next) => {
+  try {
+    validator.escape(req.body.currentUser);
     next();
   } catch (err) {
     throw new ExpressError(400, err);
@@ -41,4 +50,4 @@ const isAuthor = async (req, res, next) => {
   return res.json("Unauthorized User");
 };
 
-export { sanitizeJob, isLoggedIn, isAuthor };
+export { sanitizeJob, sanitizeUser, isLoggedIn, isAuthor };

@@ -30,6 +30,21 @@ const updateJobSubmit = async (job, id) => {
   }
 };
 
+const jobApply = async (jobId, user) => {
+  try {
+    const res = await fetch(`/api/job-apply/${jobId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    return res;
+  } catch (err) {
+    return console.log(`An error occurred, ${err}`);
+  }
+};
+
 const deleteJob = async (id) => {
   try {
     const res = await fetch(`/api/jobs/${id}`, {
@@ -41,4 +56,4 @@ const deleteJob = async (id) => {
   }
 };
 
-export { addJobSubmit, updateJobSubmit, deleteJob };
+export { addJobSubmit, updateJobSubmit, deleteJob, jobApply };

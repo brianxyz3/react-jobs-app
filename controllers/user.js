@@ -1,3 +1,13 @@
+const getUserApiDetail = async (id) => {
+  try {
+    const res = await fetch(`/api/user/${id}`);
+    const data = res.json();
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
+
 const apiRegisterUser = async (newUser) => {
   try {
     const res = await fetch("/api/register", {
@@ -45,4 +55,4 @@ const apiDeleteUser = async (userId) => {
   }
 };
 
-export { apiRegisterUser, apiLoginUser, apiDeleteUser };
+export { getUserApiDetail, apiRegisterUser, apiLoginUser, apiDeleteUser };
