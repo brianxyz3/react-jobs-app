@@ -26,6 +26,12 @@ const UserSchema = new Schema({
       ref: "Job",
     },
   ],
+  pendingJobApplications: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Job",
+    },
+  ],
 });
 
 UserSchema.post("findOneAndDelete", async (user) => {

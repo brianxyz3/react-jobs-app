@@ -49,12 +49,18 @@ const JobSchema = new Schema({
   },
   postedBy: {
     type: String,
-    required: true,
+    // required: true,
   },
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  jobApplicants: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 export default mongoose.model("Job", JobSchema);
