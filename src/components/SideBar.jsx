@@ -16,19 +16,23 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
     const menuItems = [
         {
             label: "Home",
-            icon: <HomeOutlined sx={{ fontSize: 30 }} />
+            icon: <HomeOutlined sx={{ fontSize: 30 }} />,
+            link: "/",
         },
         {
             label: "Profile",
-            icon: <DashboardOutlined sx={{ fontSize: 30 }} />
+            icon: <DashboardOutlined sx={{ fontSize: 30 }} />,
+            link: "/",
         },
         {
             label: "Pending Applications",
-            icon: <HourglassBottomOutlined sx={{ fontSize: 30 }} />
+            icon: <HourglassBottomOutlined sx={{ fontSize: 30 }} />,
+            link: "/applications",
         },
         {
             label: "Schedule",
-            icon: <CalendarMonthOutlined sx={{ fontSize: 30 }} />
+            icon: <CalendarMonthOutlined sx={{ fontSize: 30 }} />,
+            link: "/schedule",
         },
     ];
 
@@ -64,14 +68,19 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
                     </NavLink>}
                     <div><MenuOpen onClick={toggleSideBar} sx={{ fontSize: 30 }} className={`${showSideBar && "rotate-180"} cursor-pointer duration-300`} /></div>
                 </div>
-                <ul className="text-md mt-10 flex flex-col gap-3">
+                <div className="text-md mt-10 flex flex-col gap-4">
                     {menuItems.map((item, index) => (
-                        <li key={index} className="flex items-center text-nowrap gap-2 cursor-pointer">
+                        item.label === "Home" ?
+                            <NavLink key={index} to={item.link} className="flex items-center text-nowrap gap-2 cursor-pointer">
                             <div>{item.icon}</div>
                             <p className={`${!showSideBar && "translate-x-12"} duration-300`}>{showSideBar && item.label}</p>
-                        </li>
+                            </NavLink>
+                            : currentUser && userLoggedIn && <NavLink key={index} to={item.link} className="flex items-center text-nowrap gap-2 cursor-pointer">
+                                <div>{item.icon}</div>
+                                <p className={`${!showSideBar && "translate-x-12"} duration-300`}>{showSideBar && item.label}</p>
+                            </NavLink>
                     ))}
-                </ul>
+                </div>
             </section>
             <div className="flex items-center w-full gap-3 cursor-pointer">
                 <div><AccountCircle sx={{ fontSize: 30 }} /></div>
@@ -79,7 +88,7 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
                     <p>{userLoggedIn && currentUser.displayName || "John Doe"}</p>
                     <p>{currentUser && currentUser.email}</p>
                 </div>
-                {<div className={`${!showSideBar && "translate-x-12"} duration-300 text-sm ms-auto`}>{userLoggedIn ? <Logout sx={{ fontSize: 28 }} onClick={toggleLogOutPopup} /> : <NavLink to="/login"><Login sx={{ fontSize: 28 }} /></NavLink>}</div>}
+                {<div className={`${!showSideBar && "translate-x-12"} duration-300 text-sm ms-auto`}>{userLoggedIn ? <Logout sx={{ fontSize: 28 }} onClick={toggleLogOutPopup} /> : <NavLink to="/login" onClick={toggleSideBar}><Login sx={{ fontSize: 28 }} /></NavLink>}</div>}
             </div>
         </nav>
     )

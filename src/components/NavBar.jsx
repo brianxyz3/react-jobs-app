@@ -90,13 +90,13 @@ const NavBar = () => {
             {showLogOutPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
             {showDeletePopup && <AuthPopUp onConfirm={doDeleteUser} onCancel={cancel} text="Enter Your Password" password={true} />}
 
-            <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-1 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     <div
                         className="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
                     >
                         {/*  Logo  */}
-                        <NavLink className="flex flex-shrink-0 items-center sm:mr-4 mr-2" to="/">
+                        <NavLink className="flex flex-shrink-0 items-center sm:mr-4 mr-1" to="/">
                             <img
                                 className="h-10 w-auto"
                                 src={logo}
@@ -106,8 +106,8 @@ const NavBar = () => {
                             >React Jobs</span>
                         </NavLink>
                         {/* Nav Link Items */}
-                        <div className="md:ml-auto">
-                            <div className="flex sm:space-x-2 space-x-1">
+                        <div className="md:ml-auto text-xs sm:text-base">
+                            <div className="flex sm:space-x-2 space-x-0">
                                 <NavLink
                                     to="/"
                                     className={checkActive}
@@ -116,7 +116,7 @@ const NavBar = () => {
                                     to="/jobs"
                                     className={checkActive}
                                 >Jobs</NavLink>
-                                {currentUser ?
+                                {currentUser &&
                                     <><NavLink
                                     to="/add-job"
                                     className={checkActive}
@@ -127,10 +127,7 @@ const NavBar = () => {
                                             onClick={toggleDeletePopup}
                                         >
                                             Delete User
-                                        </NavLink>
-                                    </> : <>
-                                        <NavLink to="/register" className={checkActive}>Sign Up</NavLink>
-                                        <NavLink to="/login" className={checkActive}>Login</NavLink>
+                                    </NavLink>
                                     </>}
                             </div>
                         </div>
