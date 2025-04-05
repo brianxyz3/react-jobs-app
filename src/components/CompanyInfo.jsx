@@ -15,7 +15,7 @@ const CompanyInfo = ({ company, contact }) => {
 
             <h3 className="text-xl">Contact Email:</h3>
 
-            <p className="my-2 bg-indigo-100 p-2 font-bold">
+            <p className="text-sm my-2 bg-indigo-100 p-2 font-bold">
                 {validator.unescape(contact.email)}
             </p>
 
