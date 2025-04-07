@@ -1,11 +1,12 @@
-const dotenv = require("dotenv");
+// const dotenv = require("dotenv");
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
-}
+// if (process.env.NODE_ENV !== "production") {
+//   dotenv.config();
+// }
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const redis = require("redis");
 const Job = require("./model/job.js");
 const User = require("./model/user.js");
 const ExpressError = require("./utilities/ExpressError.js");
@@ -16,6 +17,24 @@ const {
   isAuthor,
   sanitizeUser,
 } = require("./middleware.js");
+
+const app = express();
+const redisClient = redis.createClient();
+
+( async function startRedis() {
+  console.log("Ran IIFE");
+
+  redisClient.on("error", err => console.log("Redis Client Error", err))
+  redisClient.on("ready", () => {
+    console.log("Redis client has started");
+  })
+  .connect();
+  redisClient.ping();
+}
+)();
+
+
+
 
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/react-jobs";
 const secret = process.env.HIDDEN || "somethingonlythedevsknow";
@@ -29,7 +48,9 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
-const app = express();
+
+
+
 const sessionConfig = {
   name: "session",
   secret,
@@ -96,7 +117,8 @@ app.delete("/delete-user", isLoggedIn, async (req, res) => {
 
 app.get(
   "/jobs",
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res) => { 
+    await redisClient.setEx("movie", 3000, "tenet2");
     const jobs = await Job.find();
     res.status(200).json(jobs);
   })
@@ -188,9 +210,9 @@ app.delete(
   })
 );
 
-app.all("*", (req, res, next) => {
-  throw new ExpressError(404, "Page Not Found");
-});
+// app.all("*", (req, res, next) => {
+//   throw new ExpressError(404, "Page Not Found");
+// });
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something Went Wrong. Try Again" } = err;
