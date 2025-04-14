@@ -16,22 +16,22 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
     const menuItems = [
         {
             label: "Home",
-            icon: <HomeOutlined sx={{ fontSize: 30 }} />,
+            icon: <HomeOutlined sx={{ fontSize: 25 }} />,
             link: "/",
         },
         {
             label: "Profile",
-            icon: <DashboardOutlined sx={{ fontSize: 30 }} />,
+            icon: <DashboardOutlined sx={{ fontSize: 25 }} />,
             link: "/",
         },
         {
             label: "Pending Applications",
-            icon: <HourglassBottomOutlined sx={{ fontSize: 30 }} />,
+            icon: <HourglassBottomOutlined sx={{ fontSize: 25 }} />,
             link: "/applications",
         },
         {
             label: "Schedule",
-            icon: <CalendarMonthOutlined sx={{ fontSize: 30 }} />,
+            icon: <CalendarMonthOutlined sx={{ fontSize: 25 }} />,
             link: "/schedule",
         },
     ];
@@ -53,20 +53,20 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
     };
 
     return (
-        <nav className={`${showSideBar ? "max-w-60 fixed min-w-14" : "w-14 sticky"} top-0 items-center overflow-hidden shadow-md py-4 px-2 text-white bg-indigo-900 z-10 max-h-screen min-h-full flex flex-col justify-between duration-300`}>
+        <nav className={`${showSideBar ? "w-60 fixed" : "w-14 sticky"}  top-0 items-center overflow-hidden shadow-md py-4 px-2 text-white bg-indigo-900 z-10 h-dvh flex flex-col justify-between duration-300`}>
             {showLogOutPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
             <section className="w-full mt-2">
                 {/* Header */}
-                <div className="flex justify-between">
+                <div className="flex">
                     {/* Logo */}
                     {showSideBar && <NavLink to="/">
                         <img
-                            className="size-7"
+                            className="size-8"
                             src={logo}
                             alt="React Jobs"
                         />
                     </NavLink>}
-                    <div><MenuOpen onClick={toggleSideBar} sx={{ fontSize: 30 }} className={`${showSideBar && "rotate-180"} cursor-pointer duration-300`} /></div>
+                    <div className={`${showSideBar && "rotate-180 translate-x-40"} cursor-pointer duration-500`}><MenuOpen onClick={toggleSideBar} sx={{ fontSize: 27 }} /></div>
                 </div>
                 <div className="text-md mt-10 flex flex-col gap-4">
                     {menuItems.map((item, index) => (

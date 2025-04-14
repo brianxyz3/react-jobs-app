@@ -16,8 +16,8 @@ const JobList = ({ isHome = false }) => {
                 const data = await res.json();
                 const limit = data.length;
                 const start = limit - 3;
-                if (isHome) return setJobs(data.slice(start, limit).reverse());
-                return setJobs(data);
+                if (isHome && data.length > 3) return setJobs(data.slice(start, limit).reverse());
+                return setJobs(data.reverse());
             } catch (error) {
                 return console.log("Error fetching data, " + error);
             } finally {
