@@ -48,8 +48,8 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
-
-
+const deafaultExpTime = 1000 * 60 * 60 * 24;
+let jobId;
 
 const sessionConfig = {
   name: "session",
@@ -58,8 +58,8 @@ const sessionConfig = {
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 5,
-    maxAge: 1000 * 60 * 60 * 24 * 5,
+    expires: Date.now() + deafaultExpTime * 5,
+    maxAge: deafaultExpTime * 5,
   },
 };
 
@@ -117,9 +117,13 @@ app.delete("/delete-user", isLoggedIn, async (req, res) => {
 
 app.get(
   "/jobs",
-  catchAsync(async (req, res) => { 
-    await redisClient.setEx("movie", 3000, "tenet2");
-    const jobs = await Job.find();
+  catchAsync(async (req, res) => {  
+    jobId = undefined;   
+    const jobs = await getOrSetCache(`jobs?.jobId=${jobId}`, 
+      async () => {
+        const allJobs = await Job.find()
+        return allJobs;
+    })
     res.status(200).json(jobs);
   })
 );
@@ -152,8 +156,14 @@ app.get(
   "/jobs/:id",
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const job = await Job.findById(id);
-    if (!job) throw new ExpressError(404, "Job Not Found");
+    jobId = id;
+    const job = await getOrSetCache(`jobs?.jobId=${jobId}`, 
+      async () => {
+        const jobData = await Job.findById(id);
+        if (!jobData) throw new ExpressError(404, "Job Not Found");
+        return jobData;
+      }
+    )
     res.status(200).json(job);
   })
 );
@@ -213,6 +223,24 @@ app.delete(
 // app.all("*", (req, res, next) => {
 //   throw new ExpressError(404, "Page Not Found");
 // });
+
+function getOrSetCache (key, cbFunc) {
+  return new Promise((resolve, reject) => {
+    redisClient.get(key)
+    .then(async (data) => {
+      console.log(data);
+      
+      if(data != null) return resolve(JSON.parse(data));
+      const freshData = await cbFunc();      
+            console.log(freshData);
+
+      redisClient.setEx(key, deafaultExpTime, JSON.stringify(freshData));
+      resolve(freshData)
+    }).catch(error => {
+      if(error) return reject(error)
+    })
+  })
+}
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something Went Wrong. Try Again" } = err;
