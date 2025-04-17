@@ -1,6 +1,6 @@
-const getUserApiDetail = async (id) => {
+const getJobApplicationHistory = async (id) => {
   try {
-    const res = await fetch(`/api/user/${id}`);
+    const res = await fetch(`/api/job-application/${id}`);
     const data = res.json();
     return data;
   } catch (err) {
@@ -55,4 +55,4 @@ const apiDeleteUser = async (userId) => {
   }
 };
 
-export { getUserApiDetail, apiRegisterUser, apiLoginUser, apiDeleteUser };
+export { getJobApplicationHistory, apiRegisterUser, apiLoginUser, apiDeleteUser };

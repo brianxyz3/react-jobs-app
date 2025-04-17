@@ -8,8 +8,10 @@ import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
 import { logInWithEmailAndPassword, logInWithGoogle, resetPassword } from "../../controllers/auth";
 // import { useAuth } from "../firebaseContext/authContext";
-import { apiRegisterUser } from "../../controllers/user";
+import { apiLoginUser } from "../../controllers/user";
 import AuthPopUp from "../components/AuthPopUp";
+import { deleteUser } from "firebase/auth";
+import { auth } from "../../firebase.config";
 
 const LoginPage = () => {
     const {
@@ -19,7 +21,7 @@ const LoginPage = () => {
     } = useForm({ mode: "onChange" });
     const navigate = useNavigate();
 
-
+        
 
     const [showPassword, setShowPassword] = useState(false);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -53,10 +55,11 @@ const LoginPage = () => {
                 }, 2000);
             }
         } catch (err) {
-            setIsLoggingIn(false);
             const errorMsg = err.message.replace(/Firebase: /i, "")
             toast.error(errorMsg + "Check Your Internet Connection");
             navigate("/login");
+        } finally {
+            setIsLoggingIn(false);
         }
     }
 
@@ -69,19 +72,27 @@ const LoginPage = () => {
                 const currentUser = await logInWithGoogle();
                 const userId = currentUser.user.uid;
                 const googleData = currentUser.user.providerData[0]
-                const arr = googleData.displayName.split(" ");
-                const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
-                await apiRegisterUser(userData);
-                toast.success("Welcome Back");
-                createUserCookie(userId);
-                setTimeout(() => {
-                    navigate("/jobs");
-                }, 2000);
+                const userNames = googleData.displayName.split(" ");
+                const userData = { email: googleData.email, firstName: userNames[0], lastName: userNames[1], userId };
+                const res = await apiLoginUser(userData);
+                
+                if(res === null) {
+                    toast.success("Welcome Back");
+                    createUserCookie(userId);
+                    setTimeout(() => {
+                        navigate("/jobs");
+                    }, 2000);
+                } else {
+                    console.log(auth.currentUser);
+                    await deleteUser(auth.currentUser);
+                    toast.error("UnKnown User");
+                }
             } catch (err) {
-                setIsLoggingIn(false);
                 const errorMsg = err.message.replace(/Firebase: /i, "")
                 toast.error(errorMsg + "Check Your Internet Connection");
-            };
+            } finally {
+                setIsLoggingIn(false);
+            }
         };
     };
 

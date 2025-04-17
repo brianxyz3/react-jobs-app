@@ -56,6 +56,14 @@ const SignUpPage = () => {
         evt.preventDefault();
     };
 
+    const createUserCookie = (userId) => {
+        cookieStore.set({
+            name: "userId",
+            value: userId,
+            expires: Date.now() + day,
+        });
+    }
+
     const handleRegister = async (data) => {
         try {
             const { email, password, confirmPassword } = data;
@@ -78,10 +86,11 @@ const SignUpPage = () => {
                 navigate("/register");
             }
         } catch (err) {
-            setIsSigningUp(false);
             const errorMsg = err.toString().replace("FirebaseError: Firebase: ", "")
             toast.error(errorMsg);
             navigate("/register");
+        } finally {
+            setIsSigningUp(false);
         }
     }
 
@@ -101,10 +110,11 @@ const SignUpPage = () => {
                     navigate("/jobs");
                 }, 2000);
             } catch (err) {
-                setIsSigningUp(false);
                 const errorMsg = err.message.replace(/Firebase: /i, "")
                 toast.error(errorMsg + "Check Your Internet Connection");
-            };
+            } finally {
+                setIsSigningUp(false);
+            }
         };
     };
 

@@ -59,13 +59,15 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
                 {/* Header */}
                 <div className="flex">
                     {/* Logo */}
-                    {showSideBar && <NavLink to="/">
+                    <NavLink 
+                    to="/"
+                        className={`${showSideBar ? "opacity-100" : "opacity-0 -translate-x-10"}`}>
                         <img
                             className="size-8"
                             src={logo}
                             alt="React Jobs"
                         />
-                    </NavLink>}
+                    </NavLink>
                     <div className={`${showSideBar && "rotate-180 translate-x-40"} cursor-pointer duration-500`}><MenuOpen onClick={toggleSideBar} sx={{ fontSize: 27 }} /></div>
                 </div>
                 <div className="text-md mt-10 flex flex-col gap-4">
@@ -82,13 +84,13 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
                     ))}
                 </div>
             </section>
-            <div className="flex items-center w-full gap-3 cursor-pointer">
+            <div className="flex items-center w-full gap-2 cursor-pointer">
                 <div><AccountCircle sx={{ fontSize: 30 }} /></div>
-                <div className={`${!showSideBar && "translate-y-14"} duration-300 text-sm text-gray-400`}>
+                <div className={`${!showSideBar && "translate-y-14"} w-40 duration-300 overflow-auto text-sm text-gray-400`}>
                     <p>{userLoggedIn && currentUser.displayName || "John Doe"}</p>
                     <p>{currentUser && currentUser.email}</p>
                 </div>
-                {<div className={`${!showSideBar && "translate-x-12"} duration-300 text-sm ms-auto`}>{userLoggedIn ? <Logout sx={{ fontSize: 28 }} onClick={toggleLogOutPopup} /> : <NavLink to="/login" onClick={toggleSideBar}><Login sx={{ fontSize: 28 }} /></NavLink>}</div>}
+                {<div className={`${!showSideBar && "translate-x-12"} duration-300 text-sm ms-auto`}>{userLoggedIn ? <Logout sx={{ fontSize: 28 }} onClick={toggleLogOutPopup} className="hover:text-red-500" /> : <NavLink to="/login" onClick={toggleSideBar}><Login sx={{ fontSize: 28 }} className="hover:text-green-500" /></NavLink>}</div>}
             </div>
         </nav>
     )

@@ -9,6 +9,7 @@ import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "fir
 import { auth } from "../../firebase.config";
 import { apiDeleteUser } from "../../controllers/user";
 import AuthPopUp from "./AuthPopUp";
+import { DeleteForever } from "@mui/icons-material";
 
 // import { AuthCredential } from "firebase/auth";
 
@@ -77,9 +78,9 @@ const NavBar = () => {
 
     const checkActive = ({ isActive }) => {
         if (isActive) {
-            return "bg-black text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
+            return "bg-black text-white hover:bg-gray-900 hover:text-white rounded-md px-2 py-2 sm:px-3";
         } else {
-            return "text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
+            return "duration-300 text-white hover:bg-gray-900 hover:text-white rounded-md px-2 py-2 sm:px-3";
         };
     };
 
@@ -93,12 +94,12 @@ const NavBar = () => {
             <div className="mx-auto max-w-7xl px-1 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     <div
-                        className="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
+                        className="flex flex-1 items-center justify-evenly md:items-stretch md:justify-start"
                     >
                         {/*  Logo  */}
                         <NavLink className="flex flex-shrink-0 items-center sm:mr-4 mr-1" to="/">
                             <img
-                                className="h-10 w-auto"
+                                className="h-8 sm:h-10 w-auto"
                                 src={logo}
                                 alt="React Jobs"
                             />
@@ -106,8 +107,8 @@ const NavBar = () => {
                             >React Jobs</span>
                         </NavLink>
                         {/* Nav Link Items */}
-                        <div className="md:ml-auto text-xs sm:text-base">
-                            <div className="flex sm:space-x-2 space-x-0">
+                        <div className="md:ml-auto text-sm sm:text-base">
+                            <div className="flex sm:gap-2 sm:space-x-2 space-x-0">
                                 <NavLink
                                     to="/"
                                     className={checkActive}
@@ -123,10 +124,10 @@ const NavBar = () => {
                                     >Add Job</NavLink>
 
                                         <NavLink
-                                            className={`text-white hover:bg-red-700 hover:text-white rounded-md px-3 py-2 ${showDeletePopup && "bg-red-900"}`}
+                                            className={`duration-300 text-white group hover:bg-red-700 hover:text-white rounded-md px-3 py-2 flex items-center ${showDeletePopup && "bg-red-900"}`}
                                             onClick={toggleDeletePopup}
                                         >
-                                            Delete User
+                                        User<DeleteForever sx={{ fontSize: 16 }} className="text-red-600 group-hover:text-yellow-400" />
                                     </NavLink>
                                     </>}
                             </div>
