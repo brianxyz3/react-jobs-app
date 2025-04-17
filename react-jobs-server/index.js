@@ -48,7 +48,7 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
-const deafaultExpTime = 1000 * 60 * 60 * 24;
+const deafaultExpTime = 1000 * 60 * 60 ;
 let jobId;
 
 const sessionConfig = {
@@ -69,13 +69,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get(
-  "/user/:id",
+  "/job-application/:userId",
   catchAsync(async (req, res) => {
     try {
-      const { id } = req.params;
-      const user = await User.find({ userId: id });
-      const userDetail = await user[0].populate("pendingJobApplications");
-      res.status(200).json(userDetail);
+      const { userId } = req.params;
+      const userJobApplicationHistory = await getOrSetCache(`userJobHistory:${userId}`, async () => {
+        const user = await User.find({ userId });
+        const userDetail = await user[0].populate("pendingJobApplications");
+        return userDetail.pendingJobApplications;
+      });
+      res.status(200).json(userJobApplicationHistory);
     } catch (err) {
       console.log(err);
     }
@@ -109,6 +112,23 @@ app.post(
   })
 );
 
+app.post(
+  "/login",
+  catchAsync(async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (email) {
+        const oldUser = await User.findOne({ email });
+        if (oldUser) return res.status(200).json(null);
+        
+        res.status(401).json({message: "Unknown User"});
+      }
+    } catch (err) {
+      console.log("Backend error " + err);
+    }
+  })
+);
+
 app.delete("/delete-user", isLoggedIn, async (req, res) => {
   const { userId } = req.body;
   await User.findOneAndDelete({ userId });
@@ -118,8 +138,9 @@ app.delete("/delete-user", isLoggedIn, async (req, res) => {
 app.get(
   "/jobs",
   catchAsync(async (req, res) => {  
-    jobId = undefined;   
-    const jobs = await getOrSetCache(`jobs?.jobId=${jobId}`, 
+    jobId = undefined;
+
+    const jobs = await getOrSetCache(`jobs:${jobId}`, 
       async () => {
         const allJobs = await Job.find()
         return allJobs;
@@ -133,22 +154,29 @@ app.post(
   sanitizeJob,
   isLoggedIn,
   catchAsync(async (req, res) => {
+    try{
     if (!req.body) throw new ExpressError(400, "Invalid Job Data");
     const currentUser = req.body.postedBy;
 
-    const user = await User.find({ userId: currentUser });
-
+    const user = await User.find({userId: currentUser});
+ 
     const newJob = new Job({
       ...req.body,
       author: user[0]._id,
     });
 
     if (!newJob) throw ExpressError(400, "Invalid Job Data Input(s)");
-
+    console.log(newJob);
+    
     await newJob.save().catch((e) => console.log(e));
+    await getOrSetCache(`jobs:${newJob._id}`, () => newJob);
+    await redisClient.del("jobs:undefined");
     user[0].jobListings.push(newJob._id);
     await user[0].save();
     res.status(201).json(newJob);
+    } catch (err) {
+      console.log(err);
+    }
   })
 );
 
@@ -157,7 +185,7 @@ app.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     jobId = id;
-    const job = await getOrSetCache(`jobs?.jobId=${jobId}`, 
+    const job = await getOrSetCache(`jobs:${jobId}`, 
       async () => {
         const jobData = await Job.findById(id);
         if (!jobData) throw new ExpressError(404, "Job Not Found");
@@ -177,16 +205,16 @@ app.put(
     const currentUser = req.body.currentUser;
     const user = await User.find({ userId: currentUser });
     console.log(user);
-    const updatedJob = await Job.findById(id);
-    updatedJob.jobApplicants.push(user[0]._id);
-    console.log(updatedJob);
-    user[0].pendingJobApplications.push(updatedJob._id);
+    const job = await Job.findById(id);
+    job.jobApplicants.push(user[0]._id);
+    console.log(job);
+    user[0].pendingJobApplications.push(job._id);
     console.log(user);
     await user[0].save().catch((err) => console.log(err));
-    await updatedJob.save().catch((err) => console.log(err));
-
+    await job.save().catch((err) => console.log(err));
+    await redisClient.del(`userJobHistory:${user[0].userId}`);
     console.log("In Job Apply");
-    if (!updatedJob) throw new ExpressError(404, "Job Not Found");
+    if (!job) throw new ExpressError(404, "Job Not Found");
     res.status(200).json();
   })
 );
@@ -212,9 +240,10 @@ app.delete(
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
     if (!deletedJob) throw new ExpressError(404, "Job Not Found");
-    const updateUser = await User.findByIdAndUpdate(deletedJob.author, {
+    await redisClient.del([`jobs:${deletedJob._id}`, "jobs:undefined"]);
+    await User.findByIdAndUpdate(deletedJob.author, {
       $pull: { jobListings: deletedJob._id },
-    });
+    });  
 
     res.status(200).json({ message: "Job deleted successfully" });
   })
@@ -228,12 +257,8 @@ function getOrSetCache (key, cbFunc) {
   return new Promise((resolve, reject) => {
     redisClient.get(key)
     .then(async (data) => {
-      console.log(data);
-      
       if(data != null) return resolve(JSON.parse(data));
       const freshData = await cbFunc();      
-            console.log(freshData);
-
       redisClient.setEx(key, deafaultExpTime, JSON.stringify(freshData));
       resolve(freshData)
     }).catch(error => {
