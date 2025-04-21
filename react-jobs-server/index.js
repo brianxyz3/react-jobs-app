@@ -17,6 +17,7 @@ const {
   isAuthor,
   sanitizeUser,
 } = require("./middleware.js");
+const job = require("./model/job.js");
 
 const app = express();
 const redisClient = redis.createClient();
@@ -48,7 +49,7 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
-const deafaultExpTime = 1000 * 60 * 60 ;
+const defaultExpTime = 60 * 60  ;
 let jobId;
 
 const sessionConfig = {
@@ -58,8 +59,8 @@ const sessionConfig = {
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    expires: Date.now() + deafaultExpTime * 5,
-    maxAge: deafaultExpTime * 5,
+    expires: Date.now() + defaultExpTime * 5,
+    maxAge: defaultExpTime * 5,
   },
 };
 
@@ -187,7 +188,7 @@ app.get(
     jobId = id;
     const job = await getOrSetCache(`jobs:${jobId}`, 
       async () => {
-        const jobData = await Job.findById(id);
+        const jobData = await Job.findById(id).populate("jobApplicants");
         if (!jobData) throw new ExpressError(404, "Job Not Found");
         return jobData;
       }
@@ -204,18 +205,17 @@ app.put(
     const { id } = req.params;
     const currentUser = req.body.currentUser;
     const user = await User.find({ userId: currentUser });
-    console.log(user);
     const job = await Job.findById(id);
+    if(job.jobApplicants.includes(user[0]._id)) return res.json({message: "User Already Applied"})
     job.jobApplicants.push(user[0]._id);
     console.log(job);
     user[0].pendingJobApplications.push(job._id);
     console.log(user);
     await user[0].save().catch((err) => console.log(err));
     await job.save().catch((err) => console.log(err));
-    await redisClient.del(`userJobHistory:${user[0].userId}`);
     console.log("In Job Apply");
     if (!job) throw new ExpressError(404, "Job Not Found");
-    res.status(200).json();
+    res.status(200).json({ message: "Successfully Applied to Job, Your CV Has Been Sent TO The Recruitement Team" });
   })
 );
 
@@ -227,6 +227,44 @@ app.put(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const updatedJob = await Job.findByIdAndUpdate(id, req.body);
+    const newJob = {...updatedJob}
+    const updatedJobBody = {...newJob._doc, ...req.body}
+    
+    // Update Redis job Cache
+    const cachedJobs = await redisClient.get("jobs:undefined");
+    if(cachedJobs == null) {
+      await redisClient.del(`jobs:${updatedJob._id}`,);
+      return res.status(200).json(updatedJob);
+    }
+    const allJobs = JSON.parse(cachedJobs);
+
+    const allJobsUpdated = allJobs.map(job => (      
+      job._id == updatedJobBody._id ? updatedJobBody : job
+    ));
+
+    await redisClient
+      .multi()
+      .setEx(
+        `jobs:${updatedJob._id}`,
+        defaultExpTime,
+        JSON.stringify(updatedJobBody)
+      )
+      .setEx("jobs:undefined", defaultExpTime, JSON.stringify(allJobsUpdated))
+      .exec()
+      .then(
+        async (result) => {
+          console.log(result);
+          if (
+            result.some((response) => response.toLowerCase().includes("error"))
+          ) {
+            await redisClient.del(["jobs:undefined", `jobs:${updatedJob._id}`]);
+          }
+          return;
+        },
+        (err) => {
+          return console.log("Redis Error " + err);
+        }
+      );      
     if (!updatedJob) throw new ExpressError(404, "Job Not Found");
     res.status(200).json(updatedJob);
   })
@@ -240,7 +278,6 @@ app.delete(
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
     if (!deletedJob) throw new ExpressError(404, "Job Not Found");
-    await redisClient.del([`jobs:${deletedJob._id}`, "jobs:undefined"]);
     await User.findByIdAndUpdate(deletedJob.author, {
       $pull: { jobListings: deletedJob._id },
     });  
@@ -259,7 +296,7 @@ function getOrSetCache (key, cbFunc) {
     .then(async (data) => {
       if(data != null) return resolve(JSON.parse(data));
       const freshData = await cbFunc();      
-      redisClient.setEx(key, deafaultExpTime, JSON.stringify(freshData));
+      redisClient.setEx(key, defaultExpTime, JSON.stringify(freshData));
       resolve(freshData)
     }).catch(error => {
       if(error) return reject(error)
