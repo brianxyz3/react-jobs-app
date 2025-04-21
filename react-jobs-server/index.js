@@ -17,7 +17,6 @@ const {
   isAuthor,
   sanitizeUser,
 } = require("./middleware.js");
-const job = require("./model/job.js");
 
 const app = express();
 const redisClient = redis.createClient();
@@ -49,7 +48,7 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
-const defaultExpTime = 60 * 60  ;
+const defaultExpTime = 60 * 30  ;
 let jobId;
 
 const sessionConfig = {
@@ -206,16 +205,42 @@ app.put(
     const currentUser = req.body.currentUser;
     const user = await User.find({ userId: currentUser });
     const job = await Job.findById(id);
-    if(job.jobApplicants.includes(user[0]._id)) return res.json({message: "User Already Applied"})
+    if(job.jobApplicants.includes(user[0]._id)) return res.json({ message: "User Already Applied", success: "true" });
     job.jobApplicants.push(user[0]._id);
-    console.log(job);
     user[0].pendingJobApplications.push(job._id);
-    console.log(user);
     await user[0].save().catch((err) => console.log(err));
     await job.save().catch((err) => console.log(err));
+    await job.populate("jobApplicants");
+    await user[0].populate("pendingJobApplications");
+    await redisClient
+      .multi()
+      .setEx(
+        `userJobHistory:${user[0].userId}`,
+        defaultExpTime,
+        JSON.stringify(user[0].pendingJobApplications)
+      )
+      .setEx(`jobs:${job._id}`, defaultExpTime, JSON.stringify(job))
+      .exec()
+      .then(
+        async (result) => {
+          const isFailed = result.some((response) =>
+            response.toLowerCase().includes("error")
+          );
+          if (isFailed) {
+            await redisClient.del([
+              `userJobHistory:${user[0].userId}`,
+              `jobs:${job._id}`,
+            ]);
+          }
+          return console.log(result);
+        },
+        (err) => {
+          return console.log("Redis Error " + err);
+        }
+      );
     console.log("In Job Apply");
     if (!job) throw new ExpressError(404, "Job Not Found");
-    res.status(200).json({ message: "Successfully Applied to Job, Your CV Has Been Sent TO The Recruitement Team" });
+    res.status(200).json({ message: "Successfully Applied to Job, Your CV Has Been Sent TO The Recruitement Team", success: "true" });
   })
 );
 
@@ -254,9 +279,8 @@ app.put(
       .then(
         async (result) => {
           console.log(result);
-          if (
-            result.some((response) => response.toLowerCase().includes("error"))
-          ) {
+          const isFailed = result.some((response) => response.toLowerCase().includes("error"))
+          if (isFailed) {
             await redisClient.del(["jobs:undefined", `jobs:${updatedJob._id}`]);
           }
           return;
@@ -278,6 +302,7 @@ app.delete(
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
     if (!deletedJob) throw new ExpressError(404, "Job Not Found");
+    await redisClient.del([`jobs:${deletedJob._id}`, "jobs:undefined"]);
     await User.findByIdAndUpdate(deletedJob.author, {
       $pull: { jobListings: deletedJob._id },
     });  
