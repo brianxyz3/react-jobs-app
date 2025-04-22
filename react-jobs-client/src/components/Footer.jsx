@@ -42,10 +42,10 @@ const Footer = () => {
                 </div>
                 <div className="flex gap-4 text-3xl text-slate-400 p-8">
                     <FaFacebook />
-                    <a href="https://linkedin.com/in/brian-chima-xyz" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
+                    <a href="https://linkedin.com/in/brian-chima-xyz" target="_blank" rel="noopener noreferrer" className="hover:text-white duration-200"><FaLinkedin /></a>
                     <FaInstagram />
-                    <a href="https://x.com/BrianXYZ_01" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
-                    <a href="https://github.com/brianxyz3" target="_blank" rel="noopener noreferrer"><FaGithub /></a>
+                    <a href="https://x.com/BrianXYZ_01" target="_blank" rel="noopener noreferrer" className="hover:text-white duration-200"><FaTwitter /></a>
+                    <a href="https://github.com/brianxyz3" target="_blank" rel="noopener noreferrer" className="hover:text-white duration-200"><FaGithub /></a>
                 </div>
             </div>
         </footer>

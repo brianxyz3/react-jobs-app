@@ -22,17 +22,17 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
         {
             label: "Profile",
             icon: <DashboardOutlined sx={{ fontSize: 25 }} />,
-            link: "/",
+            link: "/coming-soon",
         },
         {
             label: "Pending Applications",
             icon: <HourglassBottomOutlined sx={{ fontSize: 25 }} />,
-            link: "/applications",
+            link: "/coming-soon",
         },
         {
             label: "Schedule",
             icon: <CalendarMonthOutlined sx={{ fontSize: 25 }} />,
-            link: "/schedule",
+            link: "/coming-soon",
         },
     ];
 
@@ -41,7 +41,6 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
 
     const logOut = async () => {
         doLogOut();
-        await cookieStore.delete("userId");
         toggleLogOutPopup();
         toast.success("Logout Successful, Goodbye");
     }
@@ -86,8 +85,9 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
             </section>
             <div className="flex items-center w-full gap-2 cursor-pointer">
                 <div><AccountCircle sx={{ fontSize: 30 }} /></div>
+                {console.log(currentUser)}
                 <div className={`${!showSideBar && "translate-y-14"} w-40 duration-300 overflow-auto text-sm text-gray-400`}>
-                    <p>{userLoggedIn && currentUser.displayName || "John Doe"}</p>
+                    {userLoggedIn && currentUser.displayName && <p>{currentUser.displayName}</p>}
                     <p>{currentUser && currentUser.email}</p>
                 </div>
                 {<div className={`${!showSideBar && "translate-x-12"} duration-300 text-sm ms-auto`}>{userLoggedIn ? <Logout sx={{ fontSize: 28 }} onClick={toggleLogOutPopup} className="hover:text-red-500" /> : <NavLink to="/login" onClick={toggleSideBar}><Login sx={{ fontSize: 28 }} className="hover:text-green-500" /></NavLink>}</div>}

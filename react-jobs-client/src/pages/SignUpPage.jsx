@@ -24,7 +24,7 @@ const SignUpPage = () => {
     const [isSigningUp, setIsSigningUp] = useState(false);
     const { userLoggedIn } = useAuth();
 
-    const day = 24 * 60 * 60 * 1000;
+    // const day = 24 * 60 * 60 * 1000;
 
 
     const errorStyle = { color: "red" }
@@ -56,13 +56,13 @@ const SignUpPage = () => {
         evt.preventDefault();
     };
 
-    const createUserCookie = (userId) => {
-        cookieStore.set({
-            name: "userId",
-            value: userId,
-            expires: Date.now() + day,
-        });
-    }
+    // const createUserCookie = (userId) => {
+    //     cookieStore.set({
+    //         name: "userId",
+    //         value: userId,
+    //         expires: Date.now() + day,
+    //     });
+    // }
 
     const handleRegister = async (data) => {
         try {
@@ -71,12 +71,7 @@ const SignUpPage = () => {
                 setIsSigningUp(true);
                 const newUser = await signUpWithEmailAndPassword(email, password);
                 const newUserId = newUser.user.uid
-                await apiRegisterUser({ ...data, userId: newUserId });
-                cookieStore.set({
-                    name: "userId",
-                    value: newUserId,
-                    expires: Date.now() + day,
-                });                
+                await apiRegisterUser({ ...data, userId: newUserId });               
                 setTimeout(() => {
                     navigate("/jobs");
                 }, 2000);
@@ -105,7 +100,6 @@ const SignUpPage = () => {
                 const arr = googleData.displayName.split(" ");
                 const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
                 await apiRegisterUser(userData);
-                createUserCookie(userId);
                 setTimeout(() => {
                     navigate("/jobs");
                 }, 2000);

@@ -17,6 +17,7 @@ import { addJobSubmit, updateJobSubmit, deleteJob } from "../controllers/job";
 import AuthLayout from "./layouts/AuthLayout";
 import SchedulePage from "./pages/SchedulePage";
 import PendingApplicationPage from "./pages/PendingApplicationPage";
+import ComingSoon from "./pages/ComingSoon";
 
 
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/edit-job/:id" element={<EditJobPage updateJob={updateJobSubmit} />} loader={jobLoader} />
           <Route path="/schedule" element={<SchedulePage />} loader={jobLoader} />
           <Route path="/applications" element={<PendingApplicationPage />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
         </Route>
 
         <Route element={<AuthLayout />}>

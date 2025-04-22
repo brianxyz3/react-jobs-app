@@ -15,6 +15,7 @@ const JobShowPage = ({ deleteJob }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
     const { currentUser } = useAuth();
 
 
@@ -29,10 +30,11 @@ const JobShowPage = ({ deleteJob }) => {
         navigate("/jobs");
     }
 
-    const handleApply = async () => {
+    const handleJobApply = async () => {
         const userId = { currentUser: currentUser.uid };
-        await jobApply(id, userId);
-        toast.success("Your Application has been sent to the employer")
+        const res = await jobApply(id, userId);
+        if(res.success === "true") setIsDisabled(true);
+        toast.success(res.message)
     }
 
     const cancel = () => {
@@ -77,9 +79,11 @@ const JobShowPage = ({ deleteJob }) => {
                                 </button>
                                 </>
                                     : <>
+                                        {console.log(job)}
                                         <button
-                                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mx-auto focus:outline-none focus:shadow-outline mt-4 block duration-150 md:hover:w-[52%] hover:-translate-y-1 md:w-2/3"
-                                            onClick={handleApply}
+                                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mx-auto focus:outline-none focus:shadow-outline mt-4 block duration-150 md:hover:w-[52%] hover:-translate-y-1 md:w-2/3 disabled:bg-indigo-950 disabled:cursor-not-allowed"
+                                            disabled={job.jobApplicants.some(applicants => applicants.userId == currentUser.uid) || isDisabled}
+                                            onClick={handleJobApply}
                                         >Quick Apply
                                         </button>
                                     </>

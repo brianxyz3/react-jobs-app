@@ -32,7 +32,6 @@ const NavBar = () => {
 
     const logOut = async () => {
         doLogOut();
-        await cookieStore.delete("userId");
         toggleLogOutPopup();
         toast.success("Logout Successful, Goodbye");
     }
@@ -50,7 +49,6 @@ const NavBar = () => {
                 await reauthenticateWithCredential(user, credential);
                 await deleteUser(user);
                 await apiDeleteUser({ userId });
-                await cookieStore.delete("userId");
 
                 toast.success("User Profile Deleted Successfully");
                 setTimeout(() => {

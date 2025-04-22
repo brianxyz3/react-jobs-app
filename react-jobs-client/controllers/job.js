@@ -39,7 +39,7 @@ const jobApply = async (jobId, user) => {
       },
       body: JSON.stringify(user),
     });
-    return res;
+    return res.json();
   } catch (err) {
     return console.log(`An error occurred, ${err}`);
   }
