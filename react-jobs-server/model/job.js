@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 const Schema = mongoose.Schema;
 
 const JobSchema = new Schema({
@@ -62,5 +63,28 @@ const JobSchema = new Schema({
     },
   ],
 });
+
+JobSchema.post("findOneAndDelete", async (job) => {
+  console.log(job);
+  
+  console.log("hit delete post middleware")
+  if(job) {
+    job.jobApplicants.map( async (applicant) => {
+      const user = await User.findByIdAndUpdate({_id: applicant},
+        { $pull: { pendingJobApplications: job._id } }
+      );
+      console.log(user);
+      return;
+    })
+    // await User.updateMany(
+    //   {
+    //     _id: {
+    //       $in: job.jobApplicants,
+    //     },
+    //   },
+    //   { $pull: { pendingJobApplications: job._id } }
+    // ).catch((err) => console.log(err));
+  }
+})
 
 module.exports = mongoose.model("Job", JobSchema);
