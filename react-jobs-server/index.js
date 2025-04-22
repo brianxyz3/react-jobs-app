@@ -301,11 +301,34 @@ app.delete(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedJob = await Job.findByIdAndDelete(id);
-    if (!deletedJob) throw new ExpressError(404, "Job Not Found");
-    await redisClient.del([`jobs:${deletedJob._id}`, "jobs:undefined"]);
     await User.findByIdAndUpdate(deletedJob.author, {
       $pull: { jobListings: deletedJob._id },
-    });  
+    });
+
+    // Get Cache Data
+    const allJobsCache = await redisClient.get("jobs:undefined");
+    const allJobs = JSON.parse(allJobsCache);
+    const updatedAllJobs = allJobs.filter((job) => job._id != deletedJob._id);
+    if (!deletedJob) throw new ExpressError(404, "Job Not Found");
+    
+    // Update Redis job Cache
+    await redisClient
+      .multi()
+      .del(`jobs:${deletedJob._id}`)
+      .setEx("jobs:undefined", defaultExpTime, JSON.stringify(updatedAllJobs))
+      .exec()
+      .then(
+        async (result) => {
+          console.log(result);
+          if (result == null) {
+            await redisClient.del(["jobs:undefined", `jobs:${updatedJob._id}`]);
+          }
+          return;
+        },
+        (err) => {
+          return console.log("Redis Error " + err);
+        }
+      );
 
     res.status(200).json({ message: "Job deleted successfully" });
   })
