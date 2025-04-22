@@ -169,10 +169,25 @@ app.post(
     console.log(newJob);
     
     await newJob.save().catch((e) => console.log(e));
-    await getOrSetCache(`jobs:${newJob._id}`, () => newJob);
-    await redisClient.del("jobs:undefined");
     user[0].jobListings.push(newJob._id);
-    await user[0].save();
+    await user[0].save().catch((e) => console.log(e));
+    const allJobs = await redisClient.get("jobs:undefined")
+      .then(async data => {
+        if(data == null) {
+          await redisClient.setEx(`jobs:${newJob._id}`, defaultExpTime, JSON.stringify(newJob))
+          return res.status(201).json(newJob);
+        }
+        const cacheData = JSON.parse(data)
+        cacheData.push(newJob);
+        return cacheData;
+      }, err => console.log("Redis Error " + err));
+
+    await redisClient
+      .multi()
+      .setEx(`jobs:${newJob._id}`, defaultExpTime, JSON.stringify(newJob))
+      .setEx("jobs:undefined", defaultExpTime, JSON.stringify(allJobs))
+      .exec()
+    
     res.status(201).json(newJob);
     } catch (err) {
       console.log(err);
@@ -307,6 +322,10 @@ app.delete(
 
     // Get Cache Data
     const allJobsCache = await redisClient.get("jobs:undefined");
+    if (allJobsCache == null) {
+      await redisClient.del(`jobs:${deletedJob._id}`);
+      return res.status(200).json({ message: "Job deleted successfully" });
+    }
     const allJobs = JSON.parse(allJobsCache);
     const updatedAllJobs = allJobs.filter((job) => job._id != deletedJob._id);
     if (!deletedJob) throw new ExpressError(404, "Job Not Found");
