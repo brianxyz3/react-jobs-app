@@ -40,3 +40,10 @@ export const emailVerification = () => {
     url: `${window.location.origin}/home`,
   });
 };
+
+export function setCookie(name, value, days) {
+  const expires = new Date(
+    Date.now() + days * 24 * 60 * 60 * 100
+  ).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/; Secure; SameSite=Lax;`;
+}

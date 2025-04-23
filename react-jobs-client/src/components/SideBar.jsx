@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import ConfirmPopup from "./ConfirmPopup";
-import { doLogOut } from "../../controllers/auth";
+import { doLogOut, setCookie } from "../../controllers/auth";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
 import { CalendarMonthOutlined, DashboardOutlined, HomeOutlined, HourglassBottomOutlined, MenuOpen, AccountCircle, Logout, Login } from "@mui/icons-material";
@@ -11,7 +11,9 @@ import { useAuth } from "../firebaseContext/authContext";
 const SideBar = ({ showSideBar, toggleSideBar }) => {
     const [showLogOutPopup, setShowLogOutPopup] = useState(false);
     const { currentUser, userLoggedIn } = useAuth();
-
+    const navigate = useNavigate();
+    
+    const cookieObj = {};
 
     const menuItems = [
         {
@@ -38,9 +40,25 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
 
     const toggleLogOutPopup = () => { setShowLogOutPopup(prevState => !prevState) };
 
+    useEffect(() => {
+            parseCookie(document.cookie)
+            if(!cookieObj.userId) doLogOut();
+            navigate("/");
+        }, [])
+    
+    const parseCookie = (cookieString) => {
+        const splitCookie = cookieString.split(";");
+        splitCookie.forEach(cookie => {
+            const [key, value] = cookie.trim().split("=");
+            cookieObj[key] = value;
+        });
+        return cookieObj;
+    }
+
 
     const logOut = async () => {
         doLogOut();
+        setCookie("userId", "", -100);
         toggleLogOutPopup();
         toast.success("Logout Successful, Goodbye");
     }

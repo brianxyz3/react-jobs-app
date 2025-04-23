@@ -21,7 +21,7 @@ const CompanyInfo = ({ company, contact }) => {
 
             <h3 className="text-xl">Contact Phone:</h3>
 
-            <p className="my-2 bg-indigo-100 p-2 font-bold">{validator.unescape(contact.phone)}</p>
+            <p className="my-2 bg-indigo-100 p-2 font-bold">{validator.unescape(contact.phone) || "Not Available"}</p>
         </div>)
 }
 

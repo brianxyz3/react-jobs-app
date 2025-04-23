@@ -12,6 +12,7 @@ import { apiLoginUser } from "../../controllers/user";
 import AuthPopUp from "../components/AuthPopUp";
 import { deleteUser } from "firebase/auth";
 import { auth } from "../../firebase.config";
+import { setCookie } from "../../controllers/auth";
 
 const LoginPage = () => {
     const {
@@ -27,27 +28,21 @@ const LoginPage = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [showResetPopup, setShowResetPopUp] = useState(false);
 
-    // const day = 24 * 60 * 60 * 1000;
+    const day = 24 * 60 * 60 * 1000;
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleEvtDefault = (evt) => {
         evt.preventDefault();
     };
 
-    // const createUserCookie = (userId) => {
-    //     cookieStore.set({
-    //         name: "userId",
-    //         value: userId,
-    //         expires: Date.now() + day,
-    //     });
-    // }
 
     const handleLogin = async (data, evt) => {
         try {
             if (!isLoggingIn) {
                 setIsLoggingIn(true);
                 const currentUser = await logInWithEmailAndPassword(data.email, data.password);
-                const currentUserId = currentUser.user.uid;
+                const userId = currentUser.user.uid;
+                setCookie("userId", userId, day);
                 toast.success("Welcome Back");
                 setTimeout(() => {
                     navigate("/jobs");
@@ -77,6 +72,7 @@ const LoginPage = () => {
                 
                 if(res === null) {
                     toast.success("Welcome Back");
+                    setCookie("userId", userId, day);
                     setTimeout(() => {
                         navigate("/jobs");
                     }, 2000);

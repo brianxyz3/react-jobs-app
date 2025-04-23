@@ -7,7 +7,7 @@ import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { signUpWithEmailAndPassword } from "../../controllers/auth";
+import { setCookie, signUpWithEmailAndPassword } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
 import { apiRegisterUser } from "../../controllers/user";
 import { logInWithGoogle } from "../../controllers/auth";
@@ -24,7 +24,7 @@ const SignUpPage = () => {
     const [isSigningUp, setIsSigningUp] = useState(false);
     const { userLoggedIn } = useAuth();
 
-    // const day = 24 * 60 * 60 * 1000;
+    const day = 24 * 60 * 60 * 1000;
 
 
     const errorStyle = { color: "red" }
@@ -56,14 +56,6 @@ const SignUpPage = () => {
         evt.preventDefault();
     };
 
-    // const createUserCookie = (userId) => {
-    //     cookieStore.set({
-    //         name: "userId",
-    //         value: userId,
-    //         expires: Date.now() + day,
-    //     });
-    // }
-
     const handleRegister = async (data) => {
         try {
             const { email, password, confirmPassword } = data;
@@ -71,7 +63,8 @@ const SignUpPage = () => {
                 setIsSigningUp(true);
                 const newUser = await signUpWithEmailAndPassword(email, password);
                 const newUserId = newUser.user.uid
-                await apiRegisterUser({ ...data, userId: newUserId });               
+                await apiRegisterUser({ ...data, userId: newUserId });
+                setCookie("userId", newUserId, day);               
                 setTimeout(() => {
                     navigate("/jobs");
                 }, 2000);
@@ -93,13 +86,13 @@ const SignUpPage = () => {
         if (!isSigningUp) {
             try {
                 setIsSigningUp(true);
-                const currentUser = await logInWithGoogle()
-                    .catch((err) => (console.log(err)))
+                const currentUser = await logInWithGoogle().catch((err) => (console.log(err)))
                 const userId = currentUser.user.uid;
                 const googleData = currentUser.user.providerData[0]
                 const arr = googleData.displayName.split(" ");
                 const userData = { email: googleData.email, firstName: arr[0], lastName: arr[1], userId };
                 await apiRegisterUser(userData);
+                setCookie("userId", userId, day);
                 setTimeout(() => {
                     navigate("/jobs");
                 }, 2000);

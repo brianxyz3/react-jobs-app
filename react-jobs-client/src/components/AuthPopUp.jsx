@@ -25,15 +25,15 @@ const AuthPopUp = ({ onCancel, onConfirm, text, email = false, password = false 
 
     return (
         <section style={{ background: "rgba(0,0,0,0.8)", zIndex: "10" }} className="flex justify-center items-center fixed inset-0">
-            <div className="w-[32rem] border rounded-lg mx-auto bg-blue-300">
-                <div className="w-11/12 p-10 mx-auto">
-                    <h2 className="text-center text-2xl font-bold font-mono">{text}</h2>
+            <div className="w-full sm:w-[32rem] border rounded-lg mx-auto bg-blue-300">
+                <div className="w-11/12 py-5 sm:py-10 overflow-hidden mx-auto">
+                    <h2 className="text-center text-sm sm:text-xl font-bold font-mono ">{text}</h2>
                     <form onSubmit={handleSubmit(onConfirm)}>
-                        <div className="my-8">
+                        <div className="my-4 sm:my-8">
                             {email && <TextField fullWidth error={Boolean(errors.email)} size="small" label="Email" variant="outlined" autoComplete="email" {...register("email", { required: true })} />}
 
                             {password && <FormControl fullWidth variant="outlined" size='small'>
-                                <InputLabel htmlFor="password">Password</InputLabel>
+                                <InputLabel htmlFor="password">Enter Password</InputLabel>
                                 <OutlinedInput
                                     error={Boolean(errors.password)}
                                     {...register("password", { required: true })}
@@ -53,7 +53,7 @@ const AuthPopUp = ({ onCancel, onConfirm, text, email = false, password = false 
                                             </IconButton>
                                         </InputAdornment>
                                     }
-                                    label="Password"
+                                    label="Enter Password"
                                 />
                             </FormControl>}
                         </div>

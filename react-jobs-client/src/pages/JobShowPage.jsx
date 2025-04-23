@@ -16,7 +16,7 @@ const JobShowPage = ({ deleteJob }) => {
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
-    const { currentUser } = useAuth();
+    const { currentUser,  userLoggedIn } = useAuth();
 
 
     const handleDeleteClick = () => {
@@ -64,7 +64,7 @@ const JobShowPage = ({ deleteJob }) => {
                         <aside>
                             <CompanyInfo company={job.company} contact={job.contact} />
                             {/* Edit Job */}
-                            <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                            {userLoggedIn && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                                 {currentUser && currentUser.uid === job.postedBy ? <>
                                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                                 <Link
@@ -79,7 +79,6 @@ const JobShowPage = ({ deleteJob }) => {
                                 </button>
                                 </>
                                     : <>
-                                        {console.log(job)}
                                         <button
                                             className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mx-auto focus:outline-none focus:shadow-outline mt-4 block duration-150 md:hover:w-[52%] hover:-translate-y-1 md:w-2/3 disabled:bg-indigo-950 disabled:cursor-not-allowed"
                                             disabled={job.jobApplicants.some(applicants => applicants.userId == currentUser.uid) || isDisabled}
@@ -88,7 +87,7 @@ const JobShowPage = ({ deleteJob }) => {
                                         </button>
                                     </>
                                 }
-                            </div>
+                            </div>}
 
                         </aside>
                     </div>

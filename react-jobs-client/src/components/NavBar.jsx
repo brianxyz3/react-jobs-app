@@ -10,6 +10,7 @@ import { auth } from "../../firebase.config";
 import { apiDeleteUser } from "../../controllers/user";
 import AuthPopUp from "./AuthPopUp";
 import { DeleteForever } from "@mui/icons-material";
+import { setCookie } from "../../controllers/auth";
 
 // import { AuthCredential } from "firebase/auth";
 
@@ -28,12 +29,12 @@ const NavBar = () => {
     const toggleDeletePopup = () => { setShowDeletePopup(prevState => !prevState) };
 
 
-
-
-    const logOut = async () => {
+    const logOut = () => {
         doLogOut();
+        setCookie("userId", "", -100);
         toggleLogOutPopup();
         toast.success("Logout Successful, Goodbye");
+        navigate("/")
     }
 
     const doDeleteUser = async (data) => {
@@ -49,7 +50,7 @@ const NavBar = () => {
                 await reauthenticateWithCredential(user, credential);
                 await deleteUser(user);
                 await apiDeleteUser({ userId });
-
+                setCookie("userId", "", -100);
                 toast.success("User Profile Deleted Successfully");
                 setTimeout(() => {
                     navigate("/");
@@ -87,7 +88,7 @@ const NavBar = () => {
     return (
         <nav className="bg-indigo-700 border-b border-indigo-500 text-nowrap">
             {showLogOutPopup && <ConfirmPopup onConfirm={logOut} onCancel={cancel} text="Logout" />}
-            {showDeletePopup && <AuthPopUp onConfirm={doDeleteUser} onCancel={cancel} text="Enter Your Password" password={true} />}
+            {showDeletePopup && <AuthPopUp onConfirm={doDeleteUser} onCancel={cancel} text="Are You Sure You Want To Delete User?" password={true} />}
 
             <div className="mx-auto max-w-7xl px-1 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
