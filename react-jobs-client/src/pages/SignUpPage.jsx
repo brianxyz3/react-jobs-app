@@ -63,12 +63,14 @@ const SignUpPage = () => {
                 setIsSigningUp(true);
                 const newUser = await signUpWithEmailAndPassword(email, password);
                 const newUserId = newUser.user.uid
-                await apiRegisterUser({ ...data, userId: newUserId });
-                setCookie("userId", newUserId, day);               
-                setTimeout(() => {
-                    navigate("/jobs");
-                }, 2000);
-                toast.success("User Successfully Registered, Welcome!");
+                const res = await apiRegisterUser({ ...data, userId: newUserId });
+                if(res.message) {
+                    setCookie("userId", newUserId, day);               
+                    toast.success(res.message);
+                    setTimeout(() => {
+                        navigate("/jobs");
+                    }, 2000);
+                }
             } else {
                 toast.error("Password does not match");
                 navigate("/register");

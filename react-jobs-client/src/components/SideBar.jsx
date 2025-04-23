@@ -41,9 +41,13 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
     const toggleLogOutPopup = () => { setShowLogOutPopup(prevState => !prevState) };
 
     useEffect(() => {
-            parseCookie(document.cookie)
-            if(!cookieObj.userId) doLogOut();
-            navigate("/");
+            setTimeout(() => {
+                parseCookie(document.cookie)
+                if(!cookieObj.userId) {
+                    doLogOut();
+                    navigate("/");
+                }
+            }, 1000);
         }, [])
     
     const parseCookie = (cookieString) => {
@@ -56,11 +60,12 @@ const SideBar = ({ showSideBar, toggleSideBar }) => {
     }
 
 
-    const logOut = async () => {
+    const logOut = () => {
         doLogOut();
         setCookie("userId", "", -100);
         toggleLogOutPopup();
         toast.success("Logout Successful, Goodbye");
+        navigate("/")
     }
 
     const cancel = () => {

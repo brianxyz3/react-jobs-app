@@ -90,9 +90,9 @@ app.post(
   catchAsync(async (req, res) => {
     try {
       const { firstName, lastName, email, userId } = req.body;
-      if (email) {
-        const oldUser = await User.findOne({ email });
-        if (oldUser) return res.status(200).json(null);
+      if (userId) {
+        const existingUser = await User.findOne({ userId });
+        if (existingUser) return res.status(200).json({message: "Welcome Back!"});
         const newUser = new User({
           email,
           firstName,
@@ -104,7 +104,9 @@ app.post(
 
         if (!registeredUser)
           throw new ExpressError(500, "Something Went Wrong Registering User");
-        res.status(200).json({ id: registeredUser._id });
+        res
+          .status(200)
+          .json({ message: "User Successfully Registered, Welcome!" });
       }
     } catch (err) {
       console.log("Backend error " + err);
@@ -116,12 +118,14 @@ app.post(
   "/login",
   catchAsync(async (req, res) => {
     try {
-      const { email } = req.body;
-      if (email) {
-        const oldUser = await User.findOne({ email });
-        if (oldUser) return res.status(200).json(null);
+      console.log(req.body);
+      
+      const { userId } = req.body;
+      if (userId) {
+        const existingUser = await User.findOne({ userId });
+        if (existingUser) return res.status(200).json({success: "true"});
         
-        res.status(401).json({message: "Unknown User"});
+        res.status(401).json({success: "false", message: "Unknown User"});
       }
     } catch (err) {
       console.log("Backend error " + err);
@@ -218,9 +222,13 @@ app.put(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const currentUser = req.body.currentUser;
+
     const user = await User.find({ userId: currentUser });
     const job = await Job.findById(id);
-    if(job.jobApplicants.includes(user[0]._id)) return res.json({ message: "User Already Applied", success: "true" });
+    if(job.jobApplicants.includes(user[0]._id)) return res
+      .status(200)
+      .json({ message: "User Already Applied", success: "true" });;
+      
     job.jobApplicants.push(user[0]._id);
     user[0].pendingJobApplications.push(job._id);
     await user[0].save().catch((err) => console.log(err));

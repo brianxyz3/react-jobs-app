@@ -52,13 +52,11 @@ const NavBar = () => {
                 await apiDeleteUser({ userId });
                 setCookie("userId", "", -100);
                 toast.success("User Profile Deleted Successfully");
-                setTimeout(() => {
-                    navigate("/");
-                }, 2000);
+                navigate("/");
             };
         } catch (err) {
             setIsDeletingUser(false);
-            toast.error(err.message + ". Something Went wrong, Try Again");
+            toast.error("Something Went wrong, Try Again");
             console.log(err);
         };
         toggleDeletePopup();

@@ -6,7 +6,7 @@ import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } fr
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import logo from "../assets/images/logo.png";
-import { logInWithEmailAndPassword, logInWithGoogle, resetPassword } from "../../controllers/auth";
+import { doLogOut, logInWithEmailAndPassword, logInWithGoogle, resetPassword } from "../../controllers/auth";
 // import { useAuth } from "../firebaseContext/authContext";
 import { apiLoginUser } from "../../controllers/user";
 import AuthPopUp from "../components/AuthPopUp";
@@ -42,6 +42,12 @@ const LoginPage = () => {
                 setIsLoggingIn(true);
                 const currentUser = await logInWithEmailAndPassword(data.email, data.password);
                 const userId = currentUser.user.uid;
+                const res = await apiLoginUser({userId});
+                if(res.success !== "true") {
+                    doLogOut();
+                    toast.error(res.message)
+                    return;
+                }
                 setCookie("userId", userId, day);
                 toast.success("Welcome Back");
                 setTimeout(() => {

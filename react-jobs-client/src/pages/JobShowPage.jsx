@@ -33,8 +33,13 @@ const JobShowPage = ({ deleteJob }) => {
     const handleJobApply = async () => {
         const userId = { currentUser: currentUser.uid };
         const res = await jobApply(id, userId);
-        if(res.success === "true") setIsDisabled(true);
-        toast.success(res.message)
+        console.log(res);
+        
+        if(res.success === "true") {
+            setIsDisabled(true);
+            return toast.success(res.message)
+        }
+        return toast.error("Something Went Wrong, Try Again")
     }
 
     const cancel = () => {
