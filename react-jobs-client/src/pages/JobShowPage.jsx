@@ -8,6 +8,7 @@ import ConfirmPopup from "../components/ConfirmPopup";
 import CompanyInfo from "../components/CompanyInfo";
 import { useAuth } from "../firebaseContext/authContext";
 import { jobApply } from "../../controllers/job";
+import Loader from "../components/Loader";
 
 
 const JobShowPage = ({ deleteJob }) => {
@@ -15,6 +16,7 @@ const JobShowPage = ({ deleteJob }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
+    const [isLoading, setIsLoaisLoading] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
     const { currentUser,  userLoggedIn } = useAuth();
 
@@ -74,22 +76,22 @@ const JobShowPage = ({ deleteJob }) => {
                                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                                 <Link
                                     to={`/edit-job/${job._id}`}
-                                    className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+                                    className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block duration-200"
                                 >Edit Job</Link>
                                 <button
-                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+                                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block duration-200"
                                     onClick={handleDeleteClick}
                                 >
                                     Delete Job {<DeleteIcon />}
                                 </button>
                                 </>
-                                    : <>
+                                    : <>{isLoading ? <Loader loading={isLoading} size={30} /> :
                                         <button
-                                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mx-auto focus:outline-none focus:shadow-outline mt-4 block duration-150 md:hover:w-[52%] hover:-translate-y-1 md:w-2/3 disabled:bg-indigo-950 disabled:cursor-not-allowed"
+                                            className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mx-auto focus:outline-none focus:shadow-outline mt-4 block duration-200 md:hover:w-[52%] hover:-translate-y-1 md:w-2/3 disabled:bg-indigo-950 disabled:cursor-not-allowed"
                                             disabled={job.jobApplicants.some(applicants => applicants.userId == currentUser.uid) || isDisabled}
                                             onClick={handleJobApply}
-                                        >Quick Apply
-                                        </button>
+                                        > Quick Apply
+                                        </button>}
                                     </>
                                 }
                             </div>}

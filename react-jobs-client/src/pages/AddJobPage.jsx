@@ -9,6 +9,8 @@ import Select from "@mui/material/Select";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useAuth } from "../firebaseContext/authContext";
+import Spinner from "../components/Spinner";
+import { useState } from "react";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -47,6 +49,8 @@ const salaries = [
 const AddJobPage = ({ addJob }) => {
     const navigate = useNavigate();
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const {
         register,
         handleSubmit,
@@ -80,28 +84,35 @@ const AddJobPage = ({ addJob }) => {
     }
 
     const submitAddForm = async (data) => {
-        if (currentUser) {
-            const newJob = { ...data, id: uuid(), postedBy: currentUser.uid };
-            const newJobData = await addJob(newJob);
-            console.log(newJobData);
-            toast.success("Job listing successfully added");
-            return navigate(`/jobs/${newJobData._id}`);
-        } else {
-            setTimeout(() => {
-                navigate("/login");
-            }, 3000);
-            toast.error("Login To Add New Job Listing")
+        try{
+            if (!isLoading && currentUser) {
+                setIsLoading(true);
+                const newJob = { ...data, id: uuid(), postedBy: currentUser.uid };
+                const newJobData = await addJob(newJob);
+                toast.success("Job listing successfully added");
+                return navigate(`/jobs/${newJobData._id}`);
+            } else {
+                setTimeout(() => {
+                    navigate("/login");
+                }, 3000);
+                toast.error("Login To Add New Job Listing")
+            }
+        }catch(err) {
+            console.log(err);
+        }finally{
+            setIsLoading(false);
         }
     }
 
     return (
         <>
+            {isLoading && <div className="h-full w-full fixed inset-0 bg-[rgba(0,0,0,0.8)]"><div className="fixed inset-20"><Spinner loading={isLoading} size={150} /></div></div>}
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-24">
                 <div
                     className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
                 >
-                    <form onSubmit={handleSubmit(submitAddForm)}>
+                        <form onSubmit={handleSubmit(submitAddForm)}>
                         <h2 className="text-3xl text-center font-semibold mb-6">Add Job</h2>
 
                         <div className="mb-4">

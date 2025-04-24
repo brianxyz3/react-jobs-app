@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -91,9 +91,6 @@ const EditJobPage = ({ updateJob }) => {
         };
     };
 
-    const backToJob = () => {
-        return navigate(`/jobs/${id}`)
-    }
     return (
         <>
         <section className="bg-indigo-50">
@@ -258,19 +255,19 @@ const EditJobPage = ({ updateJob }) => {
 
                         <div>
                             <button
-                                className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
+                                className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline duration-200"
                                 type="submit"
                             >
                                 Edit Job
                             </button>
                         </div>
                     </form>
-                    <button
-                        onClick={backToJob}
-                        className="bg-violet-800 hover:bg-violet-900 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-3"
+                    <Link
+                        to={`/jobs/${id}`}
+                        className="bg-gray-800 hover:bg-black text-white text-center block font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-3 duration-200"
                     >
                         Back to Job
-                    </button>
+                    </Link>
                 </div>
             </div>
             </section>

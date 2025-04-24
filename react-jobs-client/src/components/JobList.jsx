@@ -33,7 +33,7 @@ const JobList = ({ isHome = false }) => {
                 <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">
                     {isHome ? "Recent Jobs" : "Browse Jobs"}
                 </h2>
-                {loading ? (<Spinner loading={loading} />) :
+                {loading ? (<Spinner loading={loading} size={150}/>) :
                     (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {jobs.map((job) => {
