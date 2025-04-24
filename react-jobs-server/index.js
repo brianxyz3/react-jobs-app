@@ -70,6 +70,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(
   "/job-application/:userId",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     try {
       const { userId } = req.params;

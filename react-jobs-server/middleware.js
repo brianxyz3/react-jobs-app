@@ -31,10 +31,15 @@ const sanitizeUser = (req, res, next) => {
 
 const isLoggedIn = (req, res, next) => {
   console.log("got into authentication middleware");
+  const cookieObj = {};
   try{
-    const currentUser = req.headers.cookie;
-    if (currentUser.includes("userId")) {
-      console.log("got passed middleware");
+    const cookieStr = req.headers.cookie;
+    const cookieArr = cookieStr.split(";");
+    cookieArr.forEach(cookie => {
+      const [key, value] = cookie.trim().split("=");
+      cookieObj[key] = value;
+    });
+    if (cookieObj.userId) {
       return next();
     }
     throw new ExpressError(401, "Unknown User, Please Login");
