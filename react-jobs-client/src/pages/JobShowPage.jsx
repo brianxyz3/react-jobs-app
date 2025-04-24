@@ -16,7 +16,7 @@ const JobShowPage = ({ deleteJob }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
-    const [isLoading, setIsLoaisLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
     const { currentUser,  userLoggedIn } = useAuth();
 
@@ -33,15 +33,22 @@ const JobShowPage = ({ deleteJob }) => {
     }
 
     const handleJobApply = async () => {
-        const userId = { currentUser: currentUser.uid };
-        const res = await jobApply(id, userId);
-        console.log(res);
-        
-        if(res.success === "true") {
-            setIsDisabled(true);
-            return toast.success(res.message)
+        try {
+            if (!isLoading) {
+                setIsLoading(true);
+                const userId = { currentUser: currentUser.uid };
+                const res = await jobApply(id, userId);
+                if (res.success === "true") {
+                    setIsDisabled(true);
+                    return toast.success(res.message)
+                }
+                return toast.error("Something Went Wrong, Try Again")
+            }
+        } catch(err) {
+            console.log(err);
+        } finally {
+            setIsLoading(false);
         }
-        return toast.error("Something Went Wrong, Try Again")
     }
 
     const cancel = () => {
@@ -73,8 +80,9 @@ const JobShowPage = ({ deleteJob }) => {
                             {/* Edit Job */}
                             {userLoggedIn && <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                                 {currentUser && currentUser.uid === job.postedBy ? <>
-                                <h3 className="text-xl font-bold mb-6">Manage Job</h3>
-                                <Link
+                                    <h3 className="text-xl font-bold mb-6">Manage Job</h3>
+                                    {isLoading ? <Loader loading={isLoading} size={40} /> :
+                                <><Link
                                     to={`/edit-job/${job._id}`}
                                     className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block duration-200"
                                 >Edit Job</Link>
@@ -83,7 +91,7 @@ const JobShowPage = ({ deleteJob }) => {
                                     onClick={handleDeleteClick}
                                 >
                                     Delete Job {<DeleteIcon />}
-                                </button>
+                                </button></>}
                                 </>
                                     : <>{isLoading ? <Loader loading={isLoading} size={30} /> :
                                         <button

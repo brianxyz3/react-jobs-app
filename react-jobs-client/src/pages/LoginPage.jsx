@@ -5,7 +5,6 @@ import { TextField, FormControlLabel, Checkbox } from "@mui/material";
 import { IconButton, OutlinedInput, InputLabel, InputAdornment, FormControl } from "@mui/material";
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
-import logo from "../assets/images/logo.png";
 import { doLogOut, logInWithEmailAndPassword, logInWithGoogle, resetPassword } from "../../controllers/auth";
 // import { useAuth } from "../firebaseContext/authContext";
 import { apiLoginUser } from "../../controllers/user";
@@ -13,6 +12,8 @@ import AuthPopUp from "../components/AuthPopUp";
 import { deleteUser } from "firebase/auth";
 import { auth } from "../../firebase.config";
 import { setCookie } from "../../controllers/auth";
+import { loginImg, logoImg } from "../assets/images";
+import Spinner from "../components/Spinner";
 
 const LoginPage = () => {
     const {
@@ -76,13 +77,13 @@ const LoginPage = () => {
                 const userData = { email: googleData.email, firstName: userNames[0], lastName: userNames[1], userId };
                 const res = await apiLoginUser(userData);
                 
-                if(res === null) {
-                    toast.success("Welcome Back");
+                if(res.success === "true") {
                     setCookie("userId", userId, day);
+                    toast.success("Welcome Back");
                     setTimeout(() => {
                         navigate("/jobs");
                     }, 2000);
-                } else {
+                } else if(res.success === "false") {
                     console.log(auth.currentUser);
                     await deleteUser(auth.currentUser);
                     toast.error("UnKnown User");
@@ -113,16 +114,17 @@ const LoginPage = () => {
     };
 
     return (
-        <section>
+        <>
             {showResetPopup && < AuthPopUp onConfirm={handleResetPassword} onCancel={cancel} text="Enter Your Email Address" email={true} />}
-            <div className="flex justify-center md:justify-end border rounded-lg m-7">
-                <div className="w-10/12 md:w-6/12 lg:w-5/12 p-3 md:p-10 lg:p-12">
+            {isLoggingIn && <div className="h-full w-full fixed inset-0 bg-[rgba(0,0,0,0.8)]"><div className="fixed inset-20"><Spinner loading={isLoggingIn} size={150} /></div></div>} 
+            <div className="flex justify-center md:justify-end items-center border rounded-lg m-7 h-[110dvh] sm:h-dvh lg:h-[50dvh]">
+                <div className="w-full lg:w-6/12 p-3 md:p-10 lg:p-12">
                     <form onSubmit={handleSubmit(handleLogin)}>
                         <div className="mb-9">
                             <img className="h-12 w-auto mb-4"
-                                src={logo} alt="react logo" />
+                                src={logoImg} alt="react logo" />
                             <h3 className="font-bold text-2xl text-slate-900 mb-2">Login in to your account</h3>
-                            <p className="text-slate-6s00">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
+                            <p className="text-slate-600">Not a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/register">Sign Up</Link></p>
                         </div>
                         <div className="flex flex-col gap-8">
                             <TextField fullWidth error={Boolean(errors.email)} size="small" label="Email" variant="outlined" autoComplete="email" {...register("email", { required: true })} />
@@ -189,9 +191,9 @@ const LoginPage = () => {
                     </div>
 
                 </div>
-                <div className="bg-login-img bg-center bg-cover rounded-r-lg md:w-6/12"></div>
+                <div className="h-full rounded-r-lg hidden lg:block lg:w-6/12"><img src={loginImg} alt="login image" className="h-full object-cover object-center rounded-r-lg" /></div>
             </div>
-        </section>
+        </>
     )
 }
 

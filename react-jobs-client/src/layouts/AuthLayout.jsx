@@ -8,7 +8,9 @@ const AuthLayout = () => {
     return (
         <>
             <NavBar />
-            <Outlet />
+            <main className="min-h-[calc(100dvh-5dvh)] flex flex-col justify-center">
+                <Outlet />
+            </main>
             <CopyrightFooter />
             <ToastContainer />
         </>

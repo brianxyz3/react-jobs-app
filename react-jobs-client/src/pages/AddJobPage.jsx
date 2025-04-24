@@ -106,7 +106,7 @@ const AddJobPage = ({ addJob }) => {
 
     return (
         <>
-            {isLoading && <div className="h-full w-full fixed inset-0 bg-[rgba(0,0,0,0.8)]"><div className="fixed inset-20"><Spinner loading={isLoading} size={150} /></div></div>}
+        {isLoading && <div className="h-full w-full fixed inset-0 bg-[rgba(0,0,0,0.8)]"><div className="fixed inset-20"><Spinner loading={isLoading} size={150} /></div></div>}
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-24">
                 <div

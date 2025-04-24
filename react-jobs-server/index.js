@@ -123,6 +123,8 @@ app.post(
       const { userId } = req.body;
       if (userId) {
         const existingUser = await User.findOne({ userId });
+        console.log(existingUser);
+        
         if (existingUser) return res.status(200).json({success: "true"});
         
         res.status(401).json({success: "false", message: "Unknown User"});
@@ -228,7 +230,7 @@ app.put(
     if(job.jobApplicants.includes(user[0]._id)) return res
       .status(200)
       .json({ message: "User Already Applied", success: "true" });;
-      
+
     job.jobApplicants.push(user[0]._id);
     user[0].pendingJobApplications.push(job._id);
     await user[0].save().catch((err) => console.log(err));

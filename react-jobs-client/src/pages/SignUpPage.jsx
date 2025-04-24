@@ -3,7 +3,7 @@ import { TextField, FormControlLabel, Checkbox, IconButton, OutlinedInput, Input
 import FormControl from "@mui/material/FormControl";
 import { Google, VisibilityOff, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/images/logo.png";
+import {logoImg, registerImg} from "../assets/images";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import { setCookie, signUpWithEmailAndPassword } from "../../controllers/auth";
 import { useAuth } from "../firebaseContext/authContext";
 import { apiRegisterUser } from "../../controllers/user";
 import { logInWithGoogle } from "../../controllers/auth";
+import Spinner from "../components/Spinner";
 
 const SignUpPage = () => {
     const navigate = useNavigate();
@@ -108,14 +109,15 @@ const SignUpPage = () => {
     };
 
     return (
-        <section>
+        <>
             {userLoggedIn && navigate("/")}
-            <div className="flex justify-center md:justify-end border rounded-lg m-7">
-                <div className="w-10/12 md:w-6/12 lg:w-5/12 p-3 md:p-10 lg:p-12">
+            {isSigningUp && <div className="h-full w-full fixed inset-0 bg-[rgba(0,0,0,0.8)]"><div className="fixed inset-20"><Spinner loading={isSigningUp} size={150} /></div></div>}
+            <div className="flex justify-center md:justify-end items-center border rounded-lg m-7 h-[130dvh] sm:h-dvh lg:h-[70dvh]">
+                <div className="w-full lg:w-6/12 p-3 md:p-10 lg:p-12">
                     <form onSubmit={handleSubmit(handleRegister)} >
                         <div className="mb-9 ">
                             <img className="h-12 w-auto mb-4"
-                                src={logo} alt="react logo" />
+                                src={logoImg} alt="react logo" />
                             <h3 className="font-bold text-2xl text-slate-900 mb-2">Sign up to join us</h3>
                             <p className="text-slate-600">Already a member? <Link className="md:mt-2 text-indigo-400 hover:text-indigo-500" to="/login">Login</Link></p>
                         </div>
@@ -195,9 +197,9 @@ const SignUpPage = () => {
                         </button>
                     </div>
                 </div>
-                <div className="bg-signup-img bg-center bg-cover rounded-r-lg md:w-6/12"></div>
+                <div className="h-full rounded-r-lg hidden lg:block lg:w-6/12"><img src={registerImg} alt="sign up images" className="h-full object-cover object-left rounded-r-lg" /></div>
             </div>
-        </section>
+        </>
     )
 }
 
